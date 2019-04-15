@@ -2,17 +2,22 @@ package nhsfinder
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strconv"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 // GetPharmacies loads pharmacies from specified csvFile file and adds postcode info
 func GetPharmacies(csvFile string, postcodeDB *PostcodeDB) []Pharmacy {
 	pharmacies := loadPharmacies(csvFile)
 	for _, p := range pharmacies {
-		pcode := p.Address.Postcode.Value
-		p.Address.UpdatePostcode(postcodeDB.Postcodes[pcode])
+		fmt.Println(p)
+		//pcode := p.Address.Postcode.Value
+		//p.Address.UpdatePostcode(postcodeDB.Postcodes[pcode])
 	}
 	return pharmacies
 }
@@ -20,10 +25,13 @@ func GetPharmacies(csvFile string, postcodeDB *PostcodeDB) []Pharmacy {
 func loadPharmacies(filename string) []Pharmacy {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
-	r := csv.NewReader(datafile)
+
+	r := charmap.Windows1252.NewDecoder().Reader(datafile)
+	csvr := csv.NewReader(r)
+	csvr.Comma = '¬'
 	var pharmacies []Pharmacy
 	for {
-		record, err := r.Read()
+		record, err := csvr.Read()
 		if err == io.EOF {
 			break
 		}
@@ -32,20 +40,27 @@ func loadPharmacies(filename string) []Pharmacy {
 			log.Fatal(err)
 		}
 
+		lat, _ := strconv.ParseFloat(record[14], 64)
+		lng, _ := strconv.ParseFloat(record[15], 64)
 		pharmacies = append(pharmacies, Pharmacy{
 			ID:   record[0],
-			Name: record[1],
+			Name: record[7],
+
 			Address: &Address{
-				Line1: record[4],
-				Line2: record[5],
-				Line3: record[6],
-				Line4: record[7],
-				Line5: record[8],
+				Line1: record[8],
+				Line2: record[9],
+				Line3: record[10],
+				Line4: record[11],
+				Line5: record[12],
 				Postcode: Postcode{
-					Value: record[9],
+					Value: record[13],
+					LatLng: LatLng{
+						Lat: lat,
+						Lng: lng,
+					},
 				},
 			},
-			Phone: record[17],
+			// Phone: record[17],
 		})
 	}
 	return pharmacies
