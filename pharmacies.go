@@ -2,7 +2,6 @@ package nhsfinder
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -12,17 +11,18 @@ import (
 )
 
 // GetPharmacies loads pharmacies from specified csvFile file and adds postcode info
-func GetPharmacies(csvFile string, postcodeDB *PostcodeDB) []Pharmacy {
-	pharmacies := loadPharmacies(csvFile)
-	for _, p := range pharmacies {
-		fmt.Println(p)
-		//pcode := p.Address.Postcode.Value
-		//p.Address.UpdatePostcode(postcodeDB.Postcodes[pcode])
-	}
-	return pharmacies
-}
+// func GetPharmacies(csvFile string, postcodeDB *PostcodeDB) []Pharmacy {
+// 	pharmacies := loadPharmacies(csvFile)
+// 	for _, p := range pharmacies {
+// 		fmt.Println(p.Name, p.Address.Postcode)
+// 		//pcode := p.Address.Postcode.Value
+// 		//p.Address.UpdatePostcode(postcodeDB.Postcodes[pcode])
+// 	}
+// 	return pharmacies
+// }
 
-func loadPharmacies(filename string) []Pharmacy {
+// GetPharmacies loads pharmacies from specified csvFile file and adds postcode info
+func GetPharmacies(filename string) []Pharmacy {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
 
@@ -60,7 +60,7 @@ func loadPharmacies(filename string) []Pharmacy {
 					},
 				},
 			},
-			// Phone: record[17],
+			Phone: record[18],
 		})
 	}
 	return pharmacies
