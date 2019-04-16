@@ -1,23 +1,13 @@
 package nhsfinder
 
+// Lovingly copied and pasted and edited from
+// https://gist.github.com/cdipaolo/d3f8db3848278b49db68
+
 import "math"
 
 // haversin(θ) function
 func hsin(theta float64) float64 {
 	return math.Pow(math.Sin(theta/2), 2)
-}
-
-// PostcodeDistances function returns the distance (in meters) between two points of
-//     a given longitude and latitude relatively accurately (using a spherical
-//     approximation of the Earth) through the Haversin Distance Formula for
-//     great arc distance on a sphere with accuracy for small distances
-//
-// point coordinates are supplied in degrees and converted into rad. in the func
-//
-// distance returned is METERS!!!!!!
-// http://en.wikipedia.org/wiki/Haversine_formula
-func PostcodeDistance(p1, p2 Postcode) float64 {
-	return distance(p1.LatLng.Lat, p1.LatLng.Lng, p2.LatLng.Lat, p2.LatLng.Lng)
 }
 
 func distance(lat1, lon1, lat2, lon2 float64) float64 {
@@ -35,4 +25,9 @@ func distance(lat1, lon1, lat2, lon2 float64) float64 {
 	h := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
 
 	return 2 * r * math.Asin(math.Sqrt(h))
+}
+
+// PostcodeDistance returns distance between 2 postcodes
+func PostcodeDistance(p1, p2 Postcode) float64 {
+	return distance(p1.LatLng.Lat, p1.LatLng.Lng, p2.LatLng.Lat, p2.LatLng.Lng)
 }
