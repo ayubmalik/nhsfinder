@@ -1,45 +1,38 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/ayubmalik/nhsfinder"
+
 	goji "goji.io"
 	"goji.io/pat"
 )
 
-var postcodeDB *nhsfinder.PostcodeDB
-var pharmacies []nhsfinder.Pharmacy
-
-// GreeterService is a service
-type GreeterService interface {
-	GetMessage() string
+type finderRoute struct {
+	finder nhsfinder.PharmacyFinder
 }
 
-// FinderService is ace
-type FinderService struct {
-	greeter GreeterService
-}
-
-func (f *FinderService) serveHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %s!", f.greeter.GetMessage())
-}
-
-type stubHello struct{}
-
-func (s stubHello) GetMessage() string {
-	return "boom"
+func (fr finderRoute) serveHTTP(w http.ResponseWriter, r *http.Request) {
+	postcode := strings.ToUpper(pat.Param(r, "postcode"))
+	postcode = strings.Replace(postcode, "+", " ", -1) // allow M4+4BF
+	result := fr.finder.FindNearest(postcode)
+	jsonOut, _ := json.Marshal(result)
+	fmt.Fprintf(w, string(jsonOut))
 }
 
 func main() {
-
-	var finder = FinderService{
-		greeter: stubHello{},
-	}
+	log.Println("Loading data from CSV files")
+	postcodes := nhsfinder.LoadPostcodes("data/ukpostcodes.csv")
+	pharmacies := nhsfinder.LoadPharmacies("data/Pharmacy.csv")
+	finderRoute := finderRoute{nhsfinder.PharmacyFinder{postcodes, pharmacies}}
 
 	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/hello"), finder.serveHTTP)
-	fmt.Println("Server started at http://localhost:8000/hello")
+	mux.HandleFunc(pat.Get("/find-pharmacies/:postcode"), finderRoute.serveHTTP)
+	fmt.Println("Started server API: http://localhost:8000/find-pharmacies/:postcode")
 	http.ListenAndServe("localhost:8000", mux)
 }
