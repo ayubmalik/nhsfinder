@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+  background: #ffffff;
+  font-family: sans-serif;
+}
+
+.search {
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.searchTerm {
+  width: 100%;
+  border: 2px solid #00a1cc;
+  background-color: #ffffff;
+  border-right: none;
+  padding: 5px;
+  height: 20px;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+}
+
+.searchTerm:focus {
+  color: #00B4CC;
+}
+
+.searchButton {
+  width: 40px;
+  height: 34px;
+  border: 1px solid #00a1cc;
+  text-align: center;
+  color: #fff;
+  background-color: #00a1cc;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+/*Resize the wrap to see the search bar change!*/
+.wrap {
+  width: 30%;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="search">
+            <input type="text" class="searchTerm" placeholder="Enter postcode e.g M4 4BF">
+            <button type="submit" class="searchButton">Go</button>
+        </div>
+        </div>
+</body>
+</html>
