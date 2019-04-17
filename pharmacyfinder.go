@@ -38,26 +38,26 @@ type Pharmacy struct {
 
 // SearchResult is a given item and distance from search query
 type SearchResult struct {
-	pharmacy Pharmacy
-	distance float64
+	Distance float64
+	Pharmacy Pharmacy
 }
 
 // PharmacyFinder finds the nearest pharmacies
 type PharmacyFinder struct {
-	postcodes  map[string]Postcode
-	pharmacies []Pharmacy
+	Postcodes  map[string]Postcode
+	Pharmacies []Pharmacy
 }
 
-func (pf PharmacyFinder) findNearest(searchPostcode string) []SearchResult {
-	distances := make(map[float64]Pharmacy)
+// FindNearest finds nearest 10
+func (pf PharmacyFinder) FindNearest(searchPostcode string) []SearchResult {
+	distances := make(map[float64]Pharmacy, 0)
 	start := time.Now()
-	for _, p := range pf.pharmacies {
-		postcode := pf.postcodes[searchPostcode]
-		if p.Address.Postcode.LatLng.Lat != 0 && p.Address.Postcode.LatLng.Lng != 0 {
-			dist := Distance(postcode.LatLng, p.Address.Postcode.LatLng)
-			distances[dist] = p
-		}
+	for _, pharmacy := range pf.Pharmacies {
+		postcode := pf.Postcodes[searchPostcode]
+		dist := Distance(postcode.LatLng, pharmacy.Address.Postcode.LatLng)
+		distances[dist] = pharmacy
 	}
+
 	end := time.Now().Sub(start)
 	log.Printf("Calculated %d distances from %s in %v\n", len(distances), searchPostcode, end)
 
@@ -69,7 +69,7 @@ func (pf PharmacyFinder) findNearest(searchPostcode string) []SearchResult {
 	result := make([]SearchResult, 0)
 	for _, key := range keys[0:10] {
 		p := distances[key]
-		result = append(result, SearchResult{p, key})
+		result = append(result, SearchResult{key, p})
 	}
 	return result
 }
