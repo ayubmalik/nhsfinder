@@ -11,18 +11,16 @@ import (
 	"github.com/ayubmalik/nhsfinder"
 )
 
-var postcodeDB *nhsfinder.PostcodeDB
+var postcodes map[string]nhsfinder.Postcode
 var pharmacies []nhsfinder.Pharmacy
 
 func search(postcodeValue string) {
 	var distances = make(map[float64]nhsfinder.Pharmacy)
 	start := time.Now()
-	for _, p := range pharmacies {
-		postcode := postcodeDB.Postcodes[postcodeValue]
-		if p.Address.Postcode.LatLng.Lat != 0 && p.Address.Postcode.LatLng.Lng != 0 {
-			dist := nhsfinder.PostcodeDistance(postcode, p.Address.Postcode)
-			distances[dist] = p
-		}
+	for _, pharmacy := range pharmacies {
+		postcode := postcodes[postcodeValue]
+		dist := nhsfinder.Distance(postcode.LatLng, pharmacy.Address.Postcode.LatLng)
+		distances[dist] = pharmacy
 	}
 	end := time.Now().Sub(start)
 	fmt.Printf("Calculated %d distances from %s\n", len(distances), postcodeValue)
@@ -41,17 +39,17 @@ func search(postcodeValue string) {
 
 func main() {
 	fmt.Println("Loading data...")
-	postcodedata := "data/ukpostcodes.csv"
-	postcodeDB = nhsfinder.LoadPostcodeDB(postcodedata)
-	fmt.Printf("Loaded %d postcodes\n", len(postcodeDB.Postcodes))
+	postcodesfile := "data/ukpostcodes.csv"
+	postcodes := nhsfinder.LoadPostcodes(postcodesfile)
+	fmt.Printf("Loaded %d postcodes\n", len(postcodes))
 
-	pharmacydata := "data/Pharmacy.csv"
-	pharmacies = nhsfinder.GetPharmacies(pharmacydata)
+	pharmaciesfile := "data/Pharmacy.csv"
+	pharmacies = nhsfinder.LoadPharmacies(pharmaciesfile)
 	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
 
-	pcode1 := postcodeDB.Postcodes["M4 4BF"]
-	pcode2 := postcodeDB.Postcodes["LS2 7UE"]
-	dist1 := nhsfinder.PostcodeDistance(pcode1, pcode2)
+	pcode1 := postcodes["M4 4BF"]
+	pcode2 := postcodes["LS2 7UE"]
+	dist1 := nhsfinder.Distance(pcode1.LatLng, pcode2.LatLng)
 	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1.Value, pcode2.Value, dist1)
 
 	fmt.Println()

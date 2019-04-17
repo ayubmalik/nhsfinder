@@ -10,19 +10,8 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
-// GetPharmacies loads pharmacies from specified csvFile file and adds postcode info
-// func GetPharmacies(csvFile string, postcodeDB *PostcodeDB) []Pharmacy {
-// 	pharmacies := loadPharmacies(csvFile)
-// 	for _, p := range pharmacies {
-// 		fmt.Println(p.Name, p.Address.Postcode)
-// 		//pcode := p.Address.Postcode.Value
-// 		//p.Address.UpdatePostcode(postcodeDB.Postcodes[pcode])
-// 	}
-// 	return pharmacies
-// }
-
-// GetPharmacies loads pharmacies from specified csvFile file and adds postcode info
-func GetPharmacies(filename string) []Pharmacy {
+// LoadPharmacies loads pharmacies from specified CSV filename
+func LoadPharmacies(filename string) []Pharmacy {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
 

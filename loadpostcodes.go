@@ -8,13 +8,8 @@ import (
 	"strconv"
 )
 
-// PostcodeDB is simple db of postcodes loaded from CSV
-type PostcodeDB struct {
-	Postcodes map[string]Postcode
-}
-
-// LoadPostcodeDB loads a PostcodeDB from CSV filename
-func LoadPostcodeDB(filename string) *PostcodeDB {
+// LoadPostcodes loads Postcode struct from CSV filename as map keyed off postcode string
+func LoadPostcodes(filename string) map[string]Postcode {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
 	r := csv.NewReader(datafile)
@@ -41,7 +36,5 @@ func LoadPostcodeDB(filename string) *PostcodeDB {
 			},
 		}
 	}
-	return &PostcodeDB{
-		Postcodes: postcodes,
-	}
+	return postcodes
 }
