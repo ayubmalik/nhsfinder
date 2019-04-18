@@ -24,11 +24,12 @@ body{
   height: 20px;
   border-radius: 5px 0 0 5px;
   outline: none;
+  color: #6e6e6e;
 }
 
-.searchTerm:focus {
+/* .searchTerm:focus {
   color: #00B4CC;
-}
+} */
 
 .searchButton {
   width: 40px;
@@ -54,9 +55,9 @@ li {
 .wrap {
   width: 50%;
   position: absolute;
-  top: 25%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 10%;
+  left: 25%;
+  /* transform: translate(-50%, -50%); */
 }
 </style>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -66,14 +67,16 @@ li {
 <body>
     <div class="wrap" id="app">
         <div class="search">
-            <input type="text" class="searchTerm" placeholder="Enter postcode e.g M4 4BF" v-model="searchPostcode">
+            <input ref="search" type="text" class="searchTerm" placeholder="Enter postcode e.g. M4 4BF" v-model="searchPostcode" v-on:keyup="doAutoComplete">
             <button type="submit" class="searchButton" v-on:click="doSearch">Go</button>
         </div>
         <div class="result" v-if="searchResult">
           <ol>
             <li v-for="r in searchResult">
-              {{ r.Distance.toFixed(2) }}m <b>{{ r.Pharmacy.Name.padEnd(18, '&nbsp;')}}</b>
-              {{ r.Pharmacy.Address.Line1.padEnd(20, '&nbsp;')}} {{ r.Pharmacy.Address.Postcode.Value}}
+              {{ r.Distance | dist }}m
+              <b>{{ r.Pharmacy.Name | nameonly }}</b>
+              {{ r.Pharmacy.Address.Line1.padEnd(25, '&nbsp;')}}
+              {{ r.Pharmacy.Address.Postcode.Value}}
             </li>
           </ol>
         </div>
@@ -83,15 +86,33 @@ li {
         el: '#app',
         data: {
           baseUrl: 'http://localhost:8000',
-          searchPostcode: 'M4 4BF',
+          searchPostcode: '',
           searchResult: []
         },
+        mounted: function() {
+          this.$refs['search'].focus()
+        },
+        filters: {
+          nameonly (value) {
+            return value.split(' - ')[0].padEnd(25, '\xa0')
+          },
+          dist (value) {
+            return value.toFixed(2).padStart(7,'\xa0')
+          },
+        },
         methods: {
-          doSearch: function (event) {
+          doSearch: function() {
             axios.get(this.baseUrl + "/find-pharmacies/" + this.searchPostcode)
             .then(response => {
-              console.log(response.data)
+              this.searchResult = response.data
             })
+          },
+          doAutoComplete: function() {
+            if (this.searchPostcode.length > 5) {
+              this.doSearch()
+            } else {
+              this.searchResult = []
+            }
           }
         }
       })
