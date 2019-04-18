@@ -22,6 +22,7 @@ func (fr finderRoute) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	postcode = strings.Replace(postcode, "+", " ", -1) // allow M4+4BF
 	result := fr.finder.FindNearest(postcode)
 	jsonOut, _ := json.Marshal(result)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Fprintf(w, string(jsonOut))
 }
 

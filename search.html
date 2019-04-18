@@ -66,8 +66,8 @@ li {
 <body>
     <div class="wrap" id="app">
         <div class="search">
-            <input type="text" class="searchTerm" placeholder="Enter postcode e.g M4 4BF">
-            <button type="submit" class="searchButton">Go</button>
+            <input type="text" class="searchTerm" placeholder="Enter postcode e.g M4 4BF" v-model="searchPostcode">
+            <button type="submit" class="searchButton" v-on:click="doSearch">Go</button>
         </div>
         <div class="result" v-if="searchResult">
           <ol>
@@ -82,53 +82,17 @@ li {
         var app = new Vue({
         el: '#app',
         data: {
-          message: "heres the results",
-          searchResult: [
-  {
-    "Distance": 334.65789980949177,
-    "Pharmacy": {
-      "ID": "29680",
-      "Name": "Cohens Chemist",
-      "Address": {
-        "Line1": "22 Swan St",
-        "Line2": "",
-        "Line3": "",
-        "Line4": "Manchester",
-        "Line5": "Lancashire",
-        "Postcode": {
-          "Value": "M4 5JQ",
-          "LatLng": {
-            "Lat": 53.4853401184082,
-            "Lng": -2.233771562576294
+          baseUrl: 'http://localhost:8000',
+          searchPostcode: 'M4 4BF',
+          searchResult: []
+        },
+        methods: {
+          doSearch: function (event) {
+            axios.get(this.baseUrl + "/find-pharmacies/" + this.searchPostcode)
+            .then(response => {
+              console.log(response.data)
+            })
           }
-        }
-      },
-      "Phone": "01618345410"
-    }
-  },
-  {
-    "Distance": 751.6431406725438,
-    "Pharmacy": {
-      "ID": "26388",
-      "Name": "Boots",
-      "Address": {
-        "Line1": "11-13 PICCADILLY",
-        "Line2": "",
-        "Line3": "",
-        "Line4": "Manchester",
-        "Line5": "Lancashire",
-        "Postcode": {
-          "Value": "M1 1LY",
-          "LatLng": {
-            "Lat": 53.481807708740234,
-            "Lng": -2.2372782230377197
-          }
-        }
-      },
-      "Phone": "01618348244"
-    }
-  }
-          ]
         }
       })
       </script>
