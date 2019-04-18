@@ -41,23 +41,96 @@ body{
   cursor: pointer;
 }
 
+.result {
+  color: #6e6e6e;
+}
+
+li {
+  font-family: 'Courier New', Courier, monospace;
+  padding-top: 16px;
+}
+
 /*Resize the wrap to see the search bar change!*/
 .wrap {
-  width: 30%;
+  width: 50%;
   position: absolute;
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 </style>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
 </head>
 <body>
-    <div class="wrap">
+    <div class="wrap" id="app">
         <div class="search">
             <input type="text" class="searchTerm" placeholder="Enter postcode e.g M4 4BF">
             <button type="submit" class="searchButton">Go</button>
         </div>
+        <div class="result" v-if="searchResult">
+          <ol>
+            <li v-for="r in searchResult">
+              {{ r.Distance.toFixed(2) }}m <b>{{ r.Pharmacy.Name.padEnd(18, '&nbsp;')}}</b>
+              {{ r.Pharmacy.Address.Line1.padEnd(20, '&nbsp;')}} {{ r.Pharmacy.Address.Postcode.Value}}
+            </li>
+          </ol>
         </div>
+    </div>
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+          message: "heres the results",
+          searchResult: [
+  {
+    "Distance": 334.65789980949177,
+    "Pharmacy": {
+      "ID": "29680",
+      "Name": "Cohens Chemist",
+      "Address": {
+        "Line1": "22 Swan St",
+        "Line2": "",
+        "Line3": "",
+        "Line4": "Manchester",
+        "Line5": "Lancashire",
+        "Postcode": {
+          "Value": "M4 5JQ",
+          "LatLng": {
+            "Lat": 53.4853401184082,
+            "Lng": -2.233771562576294
+          }
+        }
+      },
+      "Phone": "01618345410"
+    }
+  },
+  {
+    "Distance": 751.6431406725438,
+    "Pharmacy": {
+      "ID": "26388",
+      "Name": "Boots",
+      "Address": {
+        "Line1": "11-13 PICCADILLY",
+        "Line2": "",
+        "Line3": "",
+        "Line4": "Manchester",
+        "Line5": "Lancashire",
+        "Postcode": {
+          "Value": "M1 1LY",
+          "LatLng": {
+            "Lat": 53.481807708740234,
+            "Lng": -2.2372782230377197
+          }
+        }
+      },
+      "Phone": "01618348244"
+    }
+  }
+          ]
+        }
+      })
+      </script>
 </body>
 </html>
