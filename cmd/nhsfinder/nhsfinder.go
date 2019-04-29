@@ -35,5 +35,5 @@ func main() {
 	mux := goji.NewMux()
 	mux.HandleFunc(pat.Get("/find-pharmacies/:postcode"), finderRoute.serveHTTP)
 	fmt.Println("Started server API: http://localhost:8000/find-pharmacies/:postcode")
-	http.ListenAndServe("localhost:8000", mux)
+	http.ListenAndServe("0.0.0.0:8000", mux)
 }
