@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -23,7 +24,16 @@ func (fr finderRoute) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	result := fr.finder.FindNearest(postcode)
 	jsonOut, _ := json.Marshal(result)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// w.Header().Set("Access-Control-Allow-Origin", "127.0.0.1")
 	fmt.Fprintf(w, string(jsonOut))
+}
+
+func search(w http.ResponseWriter, r *http.Request) {
+	content, err := ioutil.ReadFile("search.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Fprintf(w, string(content))
 }
 
 func main() {
@@ -34,6 +44,8 @@ func main() {
 
 	mux := goji.NewMux()
 	mux.HandleFunc(pat.Get("/find-pharmacies/:postcode"), finderRoute.serveHTTP)
-	fmt.Println("Started server API: http://localhost:8000/find-pharmacies/:postcode")
+	mux.HandleFunc(pat.Get("/"), search)
+	fmt.Println("Started server API: http://localhost:8000/")
+	fmt.Println("Search API: http://localhost:8000/find-pharmacies/:postcode")
 	http.ListenAndServe("0.0.0.0:8000", mux)
 }
