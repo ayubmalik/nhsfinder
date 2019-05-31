@@ -14,10 +14,10 @@ import (
 func LoadPharmacies(filename string) []Pharmacy {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
-
-	r := charmap.Windows1252.NewDecoder().Reader(datafile)
+r := charmap.Windows1252.NewDecoder().Reader(datafile)
 	csvr := csv.NewReader(r)
 	csvr.Comma = '¬'
+
 	var pharmacies []Pharmacy
 	for {
 		record, err := csvr.Read()
