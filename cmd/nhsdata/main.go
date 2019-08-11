@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"path"
+	"strings"
 
 	"github.com/ayubmalik/nhsfinder/data"
 	"github.com/mholt/archiver"
@@ -19,15 +19,19 @@ const (
 func main() {
 	tmp, _ := ioutil.TempDir("", "nhs")
 	defer func() {
-		os.RemoveAll(tmp)
+		//os.RemoveAll(tmp)
 	}()
 	fmt.Println(tmp)
 
-	disp := fetchURL(tmp, dispensariesURL)
-	hq := fetchURL(tmp, headquartersURL)
+	dispZip := fetchURL(tmp, dispensariesURL)
+	hqZip := fetchURL(tmp, headquartersURL)
 
-	archiver.Unarchive(disp, tmp)
-	archiver.Unarchive(hq, tmp)
+	archiver.Unarchive(dispZip, tmp)
+	archiver.Unarchive(hqZip, tmp)
+
+	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"
+	hqCsv := strings.TrimSuffix(hqZip, ".zip") + ".csv"
+	data.CreatePharmacies(dispCsv, hqCsv, "")
 }
 
 func fetchURL(tmp string, url string) string {
