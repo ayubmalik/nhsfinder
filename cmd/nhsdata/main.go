@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 	"strings"
 
@@ -19,7 +20,7 @@ const (
 func main() {
 	tmp, _ := ioutil.TempDir("", "nhs")
 	defer func() {
-		//os.RemoveAll(tmp)
+		os.RemoveAll(tmp)
 	}()
 	fmt.Println(tmp)
 

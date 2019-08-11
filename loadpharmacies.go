@@ -32,8 +32,8 @@ func LoadPharmacies(filename string) []Pharmacy {
 		lat, _ := strconv.ParseFloat(record[14], 64)
 		lng, _ := strconv.ParseFloat(record[15], 64)
 		pharmacies = append(pharmacies, Pharmacy{
-			ID:   record[0],
-			Name: record[7],
+			ODSCode: record[0],
+			Name:    record[7],
 
 			Address: &Address{
 				Line1: record[8],

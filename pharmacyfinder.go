@@ -30,10 +30,12 @@ type Address struct {
 
 // Pharmacy in the UK
 type Pharmacy struct {
-	ID      string
-	Name    string
-	Address *Address
-	Phone   string
+	ODSCode       string
+	ParentODSCode string
+	Name          string
+	Address       *Address
+	Phone         string
+	LatLng        LatLng
 }
 
 // SearchResult is a given item and distance from search query
