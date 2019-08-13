@@ -8,6 +8,7 @@ import (
 
 func TestPharmacySummaries(t *testing.T) {
 
+	// TODO: use golden file
 	sampleFile := "testdata/sample-edispensary.csv"
 	t.Run("Only include active pharmacies", func(t *testing.T) {
 		if err := PharmacySummaries(sampleFile, "/tmp/pharmacies.csv"); err != nil {

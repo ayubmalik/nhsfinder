@@ -27,10 +27,10 @@ func PharmacySummaries(dispensaryCsv string, outputCsv string) error {
 		}
 	}
 
-	return writeSlice(outputCsv, summaries)
+	return write(outputCsv, summaries)
 }
 
-func writeSlice(file string, values []string) error {
+func write(file string, values []string) error {
 	f, err := os.Create(file)
 	if err != nil {
 		return err
