@@ -1,29 +1,28 @@
 package data
 
 import (
+	"bytes"
 	"io/ioutil"
-	"strings"
 	"testing"
 )
 
 func TestPharmacySummaries(t *testing.T) {
 
-	// TODO: use golden file
-	sampleFile := "testdata/sample-edispensary.csv"
 	t.Run("Only include active pharmacies", func(t *testing.T) {
-		if err := PharmacySummaries(sampleFile, "/tmp/pharmacies.csv"); err != nil {
+
+		goldenFile := "testdata/pharmacies.golden.csv"
+		inputFile := "testdata/sample-edispensary.csv"
+		outputFile := "/tmp/pharmacies.csv"
+
+		if err := PharmacySummaries(inputFile, outputFile); err != nil {
 			t.Fatalf("%v", err)
 		}
 
-		buf, _ := ioutil.ReadFile("/tmp/pharmacies.csv")
-		contents := string(buf)
+		expected, _ := ioutil.ReadFile(goldenFile)
+		actual, _ := ioutil.ReadFile(outputFile)
 
-		if strings.Contains(contents, "CLOSED1") || strings.Contains(contents, "CLOSED2") {
-			t.Errorf("Did not expect closed pharmacy")
-		}
-
-		if !strings.Contains(contents, "ACTIVE1") {
-			t.Errorf("Expected active pharmacy in '%s'", contents)
+		if !bytes.Equal(expected, actual) {
+			t.Fatalf("actual/expected contents not equal:\n%s\n\n%s", actual, expected)
 		}
 	})
 }

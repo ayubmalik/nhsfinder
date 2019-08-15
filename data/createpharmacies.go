@@ -36,8 +36,13 @@ func write(file string, values []string) error {
 		return err
 	}
 	defer f.Close()
-	for _, value := range values {
-		fmt.Fprintln(f, value)
+	last := len(values) - 1
+	for i, value := range values {
+		nl := "\n"
+		if i == last {
+			nl = ""
+		}
+		fmt.Fprintf(f, "%s%s", value, nl)
 	}
 	return nil
 }
