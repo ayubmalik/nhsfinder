@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestPharmacySummaries(t *testing.T) {
+func TestCreatePharmacies(t *testing.T) {
 
 	t.Run("Only include active pharmacies", func(t *testing.T) {
 
@@ -14,7 +14,7 @@ func TestPharmacySummaries(t *testing.T) {
 		inputFile := "testdata/sample-edispensary.csv"
 		outputFile := "/tmp/pharmacies.csv"
 
-		if err := PharmacySummaries(inputFile, outputFile); err != nil {
+		if err := CreatePharmacies(inputFile, outputFile); err != nil {
 			t.Fatalf("%v", err)
 		}
 

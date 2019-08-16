@@ -25,10 +25,7 @@ func main() {
 	fmt.Println(tmp)
 
 	dispZip := fetchURL(tmp, dispensariesURL)
-	hqZip := fetchURL(tmp, headquartersURL)
-
 	archiver.Unarchive(dispZip, tmp)
-	archiver.Unarchive(hqZip, tmp)
 
 	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"
 	data.CreatePharmacies(dispCsv, "")

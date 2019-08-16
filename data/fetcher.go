@@ -15,7 +15,7 @@ type Fetcher interface {
 type HTTPFetcher struct {
 }
 
-// Fetch a file and stores it in location.
+// Fetch a src file and store it in dest.
 func (hf *HTTPFetcher) Fetch(src string, dest string) error {
 	resp, err := http.Get(src)
 	if err != nil {
