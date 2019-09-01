@@ -28,7 +28,7 @@ func main() {
 	archiver.Unarchive(dispZip, tmp)
 
 	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"
-	data.CreatePharmacies(dispCsv, "")
+	data.CreatePharmacies(dispCsv, nil, "/tmp/pharmacies.csv")
 }
 
 func fetchURL(tmp string, url string) string {
