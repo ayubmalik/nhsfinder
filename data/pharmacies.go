@@ -4,13 +4,15 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+
+	"github.com/ayubmalik/nhsfinder"
 )
 
 // CreatePharmacies takes NHS ODS pharmacy CSV files and creates an condensed CSV of active pharmacies.
 // The pharmacy CSV file contains only fields required by this app i.e. ODSCode, Name, Address 1, Address2, Address3, Address4, Address5, Postcode, Telephone.
 // For source data see:
 // https://digital.nhs.uk/services/organisation-data-service/data-downloads/gp-and-gp-practice-related-data
-func CreatePharmacies(dispensaryCsv string, outputCsv string) error {
+func CreatePharmacies(dispensaryCsv string, pcodesLatLng map[string]nhsfinder.LatLng, outputCsv string) error {
 	d, err := os.Open(dispensaryCsv)
 	if err != nil {
 		return err
@@ -19,36 +21,38 @@ func CreatePharmacies(dispensaryCsv string, outputCsv string) error {
 
 	rows, _ := csv.NewReader(d).ReadAll()
 
-	var summaries []string
+	pharmacies := []string{}
 	for _, row := range rows {
 		// A for active and 1 for type Pharmacy
 		if row[12] == "A" && row[13] == "1" {
-			s := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", row[0], row[1], row[4], row[5], row[6], row[7], row[8], row[9], row[17], row[23])
-			summaries = append(summaries, s)
+			pcode := row[9]
+			latlng := pcodesLatLng[pcode]
+			p := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%f,%f",
+				row[0], row[1], row[4], row[5], row[6], row[7], row[8], pcode, row[17], latlng.Lat, latlng.Lng)
+			pharmacies = append(pharmacies, p)
 		}
 	}
-
-	return write(outputCsv, summaries)
+	return write(outputCsv, pharmacies)
 }
 
-// appendLatLon adds latitude (lat) and longtitude to pharmacy rows
-func appendLatLon(pharmacyRows []string, postcodes[]map) {
-
+//appendLatLon adds latitude (lat) and longtitude to pharmacy rows
+func appendLatLon(pharmacyRows []string, postcodes map[string]nhsfinder.LatLng) {
+	fmt.Println(postcodes)
 }
 
-func write(file string, values []string) error {
+func write(file string, pharmacies []string) error {
 	f, err := os.Create(file)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	last := len(values) - 1
-	for i, value := range values {
+	last := len(pharmacies) - 1
+	for i, v := range pharmacies {
 		nl := "\n"
 		if i == last {
 			nl = ""
 		}
-		fmt.Fprintf(f, "%s%s", value, nl)
+		fmt.Fprintf(f, "%s%s", v, nl)
 	}
 	return nil
 }
