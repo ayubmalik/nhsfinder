@@ -12,19 +12,21 @@ import (
 func main() {
 	fmt.Println("Loading data...")
 	postcodesfile := "data/ukpostcodes.csv"
-	postcodes := nhsfinder.LoadPostcodes(postcodesfile)
-	fmt.Printf("Loaded %d postcodes\n", len(postcodes))
+	pcodeLatLngs := nhsfinder.LoadPostcodes(postcodesfile)
+	fmt.Printf("Loaded %d postcodes\n", len(pcodeLatLngs))
 
 	pharmaciesfile := "data/Pharmacy.csv"
 	pharmacies := nhsfinder.LoadPharmacies(pharmaciesfile)
 	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
 
-	pcode1 := postcodes["M4 4BF"]
-	pcode2 := postcodes["LS2 7UE"]
-	dist1 := nhsfinder.Distance(pcode1.LatLng, pcode2.LatLng)
-	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1.Value, pcode2.Value, dist1)
+	pcode1 := "BD18 2DS"
+	pcode2 := "M4 4BF"
+	from := pcodeLatLngs[pcode1]
+	to := pcodeLatLngs[pcode2]
+	dist1 := nhsfinder.Distance(from, to)
+	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1, pcode2, dist1)
 
-	finder := nhsfinder.PharmacyFinder{postcodes, pharmacies}
+	finder := nhsfinder.PharmacyFinder{pcodeLatLngs, pharmacies}
 	fmt.Println()
 	reader := bufio.NewReader(os.Stdin)
 	for {

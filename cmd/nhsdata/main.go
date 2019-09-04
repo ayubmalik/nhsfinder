@@ -20,26 +20,29 @@ const (
 )
 
 func main() {
-	tmp, _ := ioutil.TempDir("", "nhs")
+	tmpDir, _ := ioutil.TempDir("", "nhs")
 	defer func() {
-		os.RemoveAll(tmp)
+		os.RemoveAll(tmpDir)
 	}()
-	fmt.Println("tmp dir", tmp)
+	fmt.Println("tmp dir", tmpDir)
 
 	fmt.Println("fetching", dispensariesURL)
-	dispZip := fetchURL(dispensariesURL, tmp)
-	archiver.Unarchive(dispZip, tmp)
+	dispZip := fetchURL(dispensariesURL, tmpDir)
+	archiver.Unarchive(dispZip, tmpDir)
 
 	fmt.Println("fetching", postcodesLatLngURL)
-	pcodesZip := fetchURL(postcodesLatLngURL, tmp)
-	archiver.Unarchive(pcodesZip, tmp)
-
+	pcodesZip := fetchURL(postcodesLatLngURL, tmpDir)
+	archiver.Unarchive(pcodesZip, tmpDir)
 	pcodesCsv := strings.TrimSuffix(pcodesZip, ".zip") + ".csv"
+
 	pcodes := nhsfinder.LoadPostcodes(pcodesCsv)
 
 	fmt.Println("create pharmacies")
 	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"
 	data.CreatePharmacies(dispCsv, pcodes, "/tmp/pharmacies.csv")
+
+	// keep copy of UK postcodes csv
+	os.Rename(pcodesCsv, path.Join(os.TempDir(), path.Base(pcodesCsv)))
 }
 
 func fetchURL(url string, dir string) string {
