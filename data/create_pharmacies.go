@@ -37,7 +37,7 @@ func CreatePharmacies(dispensaryCsv string, pcodesLatLng map[string]nhsfinder.La
 }
 
 func clean(src string) string {
-	return strings.Replace(src, ", ", " ", -1)
+	return strings.Replace(src, ",", "", -1)
 }
 
 //appendLatLon adds latitude (lat) and longtitude to pharmacy rows
