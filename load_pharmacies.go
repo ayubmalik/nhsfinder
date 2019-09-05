@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 )
 
 // LoadPharmacies loads pharmacies from specified CSV filename
@@ -27,6 +28,9 @@ func LoadPharmacies(filename string) []Pharmacy {
 			log.Fatal(err)
 		}
 
+		lat, _ := strconv.ParseFloat(record[9], 64)
+		lng, _ := strconv.ParseFloat(record[10], 64)
+
 		pharmacies = append(pharmacies, Pharmacy{
 			ODSCode: record[0],
 			Name:    record[1],
@@ -38,7 +42,8 @@ func LoadPharmacies(filename string) []Pharmacy {
 				Line5:    record[6],
 				Postcode: record[7],
 			},
-			Phone: record[8],
+			Phone:  record[8],
+			LatLng: LatLng{lat, lng},
 		})
 	}
 	return pharmacies

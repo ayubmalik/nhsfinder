@@ -63,7 +63,7 @@ func (pf PharmacyFinder) FindNearest(searchPostcode string) []SearchResult {
 	}
 	sort.Float64s(keys)
 	result := make([]SearchResult, 0)
-	for _, key := range keys[0:] {
+	for _, key := range keys[0:10] {
 		p := distances[key]
 		result = append(result, SearchResult{key, p})
 	}
