@@ -12,12 +12,6 @@ type LatLng struct {
 	Lng float64
 }
 
-// Postcode is a single UK postcode with latlng
-type Postcode struct {
-	Value  string
-	LatLng LatLng
-}
-
 // Address is a UK address
 type Address struct {
 	Line1    string
@@ -25,7 +19,7 @@ type Address struct {
 	Line3    string
 	Line4    string
 	Line5    string
-	Postcode Postcode
+	Postcode string
 }
 
 // Pharmacy in the UK

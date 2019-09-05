@@ -15,7 +15,7 @@ func main() {
 	pcodeLatLngs := nhsfinder.LoadPostcodes(postcodesfile)
 	fmt.Printf("Loaded %d postcodes\n", len(pcodeLatLngs))
 
-	pharmaciesfile := "data/Pharmacy.csv"
+	pharmaciesfile := "data/pharmacies.csv"
 	pharmacies := nhsfinder.LoadPharmacies(pharmaciesfile)
 	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
 
@@ -46,6 +46,6 @@ func main() {
 
 func display(results []nhsfinder.SearchResult) {
 	for i, r := range results {
-		fmt.Printf("%2d %7.2f %-30s %-30s %s\n", i, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode.Value)
+		fmt.Printf("%2d %7.2f %-30s %-30s %s\n", i, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
 	}
 }

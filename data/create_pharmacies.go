@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ayubmalik/nhsfinder"
 )
@@ -28,11 +29,15 @@ func CreatePharmacies(dispensaryCsv string, pcodesLatLng map[string]nhsfinder.La
 			pcode := row[9]
 			latlng := pcodesLatLng[pcode]
 			p := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%f,%f",
-				row[0], row[1], row[4], row[5], row[6], row[7], row[8], pcode, row[17], latlng.Lat, latlng.Lng)
+				row[0], clean(row[1]), clean(row[4]), clean(row[5]), clean(row[6]), clean(row[7]), clean(row[8]), pcode, row[17], latlng.Lat, latlng.Lng)
 			pharmacies = append(pharmacies, p)
 		}
 	}
 	return write(outputCsv, pharmacies)
+}
+
+func clean(src string) string {
+	return strings.Replace(src, ", ", " ", -1)
 }
 
 //appendLatLon adds latitude (lat) and longtitude to pharmacy rows
