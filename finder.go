@@ -12,7 +12,7 @@ type LatLng struct {
 	Lng float64
 }
 
-// Address is a UK address
+// Address in England
 type Address struct {
 	Line1    string
 	Line2    string
@@ -22,7 +22,7 @@ type Address struct {
 	Postcode string
 }
 
-// Pharmacy in the UK
+// Pharmacy in England
 type Pharmacy struct {
 	ODSCode       string
 	ParentODSCode string
@@ -32,40 +32,45 @@ type Pharmacy struct {
 	LatLng        LatLng
 }
 
-// SearchResult is a given item and distance from search query
-type SearchResult struct {
+// FindResult is a given item and distance from search query
+type FindResult struct {
 	Distance float64
 	Pharmacy Pharmacy
 }
 
-// PharmacyFinder finds the nearest pharmacies
-type PharmacyFinder struct {
+// Finder finds pharmacies
+type Finder interface {
+	ByPostcode(postcode string) []FindResult
+}
+
+// InMemFinder is an in memory Finder
+type InMemFinder struct {
 	LatLngs    map[string]LatLng
 	Pharmacies []Pharmacy
 }
 
-// FindNearest finds nearest 10
-func (pf PharmacyFinder) FindNearest(searchPostcode string) []SearchResult {
+// ByPostcode finds nearest 10
+func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
 	distances := make(map[float64]Pharmacy, 0)
 	start := time.Now()
 	for _, pharmacy := range pf.Pharmacies {
-		fromLatLng := pf.LatLngs[searchPostcode]
+		fromLatLng := pf.LatLngs[postcode]
 		dist := Distance(fromLatLng, pharmacy.LatLng)
 		distances[dist] = pharmacy
 	}
 
 	end := time.Now().Sub(start)
-	log.Printf("Calculated %d distances from %s in %v\n", len(distances), searchPostcode, end)
+	log.Printf("Calculated %d distances from %s in %v\n", len(distances), postcode, end)
 
 	keys := make([]float64, 0, len(distances))
 	for k := range distances {
 		keys = append(keys, k)
 	}
 	sort.Float64s(keys)
-	result := make([]SearchResult, 0)
+	result := make([]FindResult, 0)
 	for _, key := range keys[0:10] {
 		p := distances[key]
-		result = append(result, SearchResult{key, p})
+		result = append(result, FindResult{key, p})
 	}
 	return result
 }
