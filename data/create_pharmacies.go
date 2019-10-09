@@ -6,14 +6,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ayubmalik/nhsfinder"
+	finder "github.com/ayubmalik/pharmacyfinder"
 )
 
 // CreatePharmacies takes NHS ODS pharmacy CSV files and creates an condensed CSV of active pharmacies.
 // The pharmacy CSV file contains only fields required by this app i.e. ODSCode, Name, Address 1, Address2, Address3, Address4, Address5, Postcode, Telephone.
 // For source data see:
 // https://digital.nhs.uk/services/organisation-data-service/data-downloads/gp-and-gp-practice-related-data
-func CreatePharmacies(dispensaryCsv string, pcodesLatLng map[string]nhsfinder.LatLng, outputCsv string) error {
+func CreatePharmacies(dispensaryCsv string, pcodesLatLng map[string]finder.LatLng, outputCsv string) error {
 	d, err := os.Open(dispensaryCsv)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func clean(src string) string {
 }
 
 //appendLatLon adds latitude (lat) and longtitude to pharmacy rows
-func appendLatLon(pharmacyRows []string, postcodes map[string]nhsfinder.LatLng) {
+func appendLatLon(pharmacyRows []string, postcodes map[string]finder.LatLng) {
 	fmt.Println(postcodes)
 }
 

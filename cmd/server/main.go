@@ -8,23 +8,22 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ayubmalik/nhsfinder"
+	finder "github.com/ayubmalik/pharmacyfinder"
 
 	goji "goji.io"
 	"goji.io/pat"
 )
 
 type finderRoute struct {
-	finder nhsfinder.PharmacyFinder
+	finder finder.Finder
 }
 
 func (fr finderRoute) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	postcode := strings.ToUpper(pat.Param(r, "postcode"))
 	postcode = strings.Replace(postcode, "+", " ", -1) // allow M4+4BF
-	result := fr.finder.FindNearest(postcode)
+	result := fr.finder.ByPostcode(postcode)
 	jsonOut, _ := json.Marshal(result)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Origin", "127.0.0.1")
 	fmt.Fprintf(w, string(jsonOut))
 }
 
@@ -38,9 +37,9 @@ func search(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Println("Loading data from CSV files")
-	postcodes := nhsfinder.LoadPostcodes("data/ukpostcodes.csv")
-	pharmacies := nhsfinder.LoadPharmacies("data/Pharmacy.csv")
-	finderRoute := finderRoute{nhsfinder.PharmacyFinder{postcodes, pharmacies}}
+	postcodes := finder.LoadPostcodes("data/ukpostcodes.csv")
+	pharmacies := finder.LoadPharmacies("data/Pharmacy.csv")
+	finderRoute := finderRoute{finder.InMemFinder{postcodes, pharmacies}}
 
 	mux := goji.NewMux()
 	mux.HandleFunc(pat.Get("/find-pharmacies/:postcode"), finderRoute.serveHTTP)

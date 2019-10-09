@@ -8,9 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ayubmalik/nhsfinder"
+	finder "github.com/ayubmalik/pharmacyfinder"
 
-	"github.com/ayubmalik/nhsfinder/data"
+	"github.com/ayubmalik/pharmacyfinder/data"
 	"github.com/mholt/archiver"
 )
 
@@ -35,7 +35,7 @@ func main() {
 	archiver.Unarchive(pcodesZip, tmpDir)
 	pcodesCsv := strings.TrimSuffix(pcodesZip, ".zip") + ".csv"
 
-	pcodes := nhsfinder.LoadPostcodes(pcodesCsv)
+	pcodes := finder.LoadPostcodes(pcodesCsv)
 
 	fmt.Println("create pharmacies")
 	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"

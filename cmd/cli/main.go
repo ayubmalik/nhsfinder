@@ -6,27 +6,27 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ayubmalik/nhsfinder"
+	finder "github.com/ayubmalik/pharmacyfinder"
 )
 
 func main() {
 	fmt.Println("Loading data...")
 	postcodesfile := "data/ukpostcodes.csv"
-	pcodeLatLngs := nhsfinder.LoadPostcodes(postcodesfile)
+	pcodeLatLngs := finder.LoadPostcodes(postcodesfile)
 	fmt.Printf("Loaded %d postcodes\n", len(pcodeLatLngs))
 
 	pharmaciesfile := "data/pharmacies.csv"
-	pharmacies := nhsfinder.LoadPharmacies(pharmaciesfile)
+	pharmacies := finder.LoadPharmacies(pharmaciesfile)
 	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
 
 	pcode1 := "BD18 2DS"
 	pcode2 := "M4 4BF"
 	from := pcodeLatLngs[pcode1]
 	to := pcodeLatLngs[pcode2]
-	dist1 := nhsfinder.Distance(from, to)
+	dist1 := finder.Distance(from, to)
 	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1, pcode2, dist1)
 
-	finder := nhsfinder.PharmacyFinder{pcodeLatLngs, pharmacies}
+	finder := pharmacyfinder.PharmacyFinder{pcodeLatLngs, pharmacies}
 	fmt.Println()
 	reader := bufio.NewReader(os.Stdin)
 	for {
