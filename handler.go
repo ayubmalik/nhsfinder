@@ -15,7 +15,8 @@ type PharmacyHandler struct {
 }
 
 func (ph *PharmacyHandler) findByPostcode(w http.ResponseWriter, r *http.Request) {
-	results := ph.finder.ByPostcode("TODO")
+	postcode := pat.Param(r, "postcode")
+	results := ph.finder.ByPostcode(postcode)
 	json.NewEncoder(w).Encode(results)
 }
 

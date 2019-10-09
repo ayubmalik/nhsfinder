@@ -44,4 +44,23 @@ func TestPharmacies(t *testing.T) {
 			t.Errorf("did not get valid json pharmacy")
 		}
 	})
+
+	t.Run("passes postcode param to finder", func(t *testing.T) {
+		finder := StubFinderFunc(func(postcode string) []FindResult {
+			return []FindResult{FindResult{Pharmacy: Pharmacy{Name: postcode}}}
+		})
+
+		handler := NewPharmacyHandler(finder)
+		request, _ := http.NewRequest(http.MethodGet, "/pharmacies/postcode/m44bf", nil)
+		response := httptest.NewRecorder()
+
+		handler.ServeHTTP(response, request)
+		var got []FindResult
+		json.NewDecoder(response.Body).Decode(&got)
+
+		postcode := got[0].Pharmacy.Name
+		if postcode != "m44bf" {
+			t.Errorf("did not pass postcode param %s", postcode)
+		}
+	})
 }
