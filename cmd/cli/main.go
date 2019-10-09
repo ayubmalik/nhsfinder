@@ -11,7 +11,7 @@ import (
 
 func main() {
 	fmt.Println("Loading data...")
-	latLngs := pharmacyfinder.LoadPostcodes("data/ukpostcodes.csv")
+	latLngs := pharmacyfinder.LoadLatLngs("data/ukpostcodes.csv")
 	fmt.Printf("Loaded %d postcodes\n", len(latLngs))
 
 	pharmacies := pharmacyfinder.LoadPharmacies("data/pharmacies.csv")

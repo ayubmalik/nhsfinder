@@ -9,8 +9,8 @@ import (
 	"strconv"
 )
 
-// LoadPostcodes loads Postcode struct from CSV filename as map keyed off postcode string
-func LoadPostcodes(filename string) map[string]LatLng {
+// LoadLatLngs loads a map of string postcodes to its LatLng
+func LoadLatLngs(filename string) map[string]LatLng {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
 	r := csv.NewReader(datafile)

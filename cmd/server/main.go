@@ -36,7 +36,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Println("Loading data from CSV files")
-	latLngs := finder.LoadPostcodes("data/ukpostcodes.csv")
+	latLngs := finder.LoadLatLngs("data/ukpostcodes.csv")
 	pharmacies := finder.LoadPharmacies("data/Pharmacy.csv")
 	inMemFinder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
 	handler := finder.NewPharmacyHandler(&inMemFinder)

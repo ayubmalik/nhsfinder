@@ -35,7 +35,7 @@ func main() {
 	archiver.Unarchive(pcodesZip, tmpDir)
 	pcodesCsv := strings.TrimSuffix(pcodesZip, ".zip") + ".csv"
 
-	pcodes := finder.LoadPostcodes(pcodesCsv)
+	pcodes := finder.LoadLatLngs(pcodesCsv)
 
 	fmt.Println("create pharmacies")
 	dispCsv := strings.TrimSuffix(dispZip, ".zip") + ".csv"
