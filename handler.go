@@ -8,6 +8,11 @@ import (
 	"goji.io/pat"
 )
 
+const (
+	minlen = 5
+	maxlen = 8
+)
+
 // PharmacyHandler handles pharmacy http API
 type PharmacyHandler struct {
 	finder Finder
@@ -16,6 +21,10 @@ type PharmacyHandler struct {
 
 func (ph *PharmacyHandler) findByPostcode(w http.ResponseWriter, r *http.Request) {
 	postcode := pat.Param(r, "postcode")
+	if len(postcode) < minlen || len(postcode) > maxlen {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	results := ph.finder.ByPostcode(postcode)
 	json.NewEncoder(w).Encode(results)
 }
