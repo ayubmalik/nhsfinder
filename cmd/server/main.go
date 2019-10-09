@@ -14,7 +14,7 @@ func main() {
 	// postcode = strings.Replace(postcode, "+", " ", -1) // allow M4+4BF
 	log.Println("Loading data from CSV files")
 	latLngs := finder.LoadLatLngs("data/ukpostcodes.csv")
-	pharmacies := finder.LoadPharmacies("data/Pharmacy.csv")
+	pharmacies := finder.LoadPharmacies("data/pharmacies.csv")
 	inMemFinder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
 	handler := finder.NewPharmacyHandler(&inMemFinder)
 
