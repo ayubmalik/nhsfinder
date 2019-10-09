@@ -6,27 +6,25 @@ import (
 	"os"
 	"strings"
 
-	finder "github.com/ayubmalik/pharmacyfinder"
+	"github.com/ayubmalik/pharmacyfinder"
 )
 
 func main() {
 	fmt.Println("Loading data...")
-	postcodesfile := "data/ukpostcodes.csv"
-	pcodeLatLngs := finder.LoadPostcodes(postcodesfile)
-	fmt.Printf("Loaded %d postcodes\n", len(pcodeLatLngs))
+	latLngs := pharmacyfinder.LoadPostcodes("data/ukpostcodes.csv")
+	fmt.Printf("Loaded %d postcodes\n", len(latLngs))
 
-	pharmaciesfile := "data/pharmacies.csv"
-	pharmacies := finder.LoadPharmacies(pharmaciesfile)
+	pharmacies := pharmacyfinder.LoadPharmacies("data/pharmacies.csv")
 	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
 
 	pcode1 := "BD18 2DS"
 	pcode2 := "M4 4BF"
-	from := pcodeLatLngs[pcode1]
-	to := pcodeLatLngs[pcode2]
-	dist1 := finder.Distance(from, to)
+	from := latLngs[pcode1]
+	to := latLngs[pcode2]
+	dist1 := pharmacyfinder.Distance(from, to)
 	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1, pcode2, dist1)
 
-	finder := pharmacyfinder.PharmacyFinder{pcodeLatLngs, pharmacies}
+	inmem := pharmacyfinder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
 	fmt.Println()
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -39,12 +37,12 @@ func main() {
 			return
 		}
 
-		results := finder.FindNearest(pcode)
+		results := inmem.ByPostcode(pcode)
 		display(results)
 	}
 }
 
-func display(results []nhsfinder.SearchResult) {
+func display(results []pharmacyfinder.FindResult) {
 	for i, r := range results {
 		fmt.Printf("%2d %7.2f %-30s %-30s %s\n", i, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
 	}

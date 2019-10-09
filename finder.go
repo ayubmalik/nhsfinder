@@ -1,4 +1,4 @@
-package nhsfinder
+package pharmacyfinder
 
 import (
 	"log"

@@ -10,7 +10,6 @@ import (
 
 	finder "github.com/ayubmalik/pharmacyfinder"
 
-	goji "goji.io"
 	"goji.io/pat"
 )
 
@@ -37,14 +36,11 @@ func search(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Println("Loading data from CSV files")
-	postcodes := finder.LoadPostcodes("data/ukpostcodes.csv")
+	latLngs := finder.LoadPostcodes("data/ukpostcodes.csv")
 	pharmacies := finder.LoadPharmacies("data/Pharmacy.csv")
-	finderRoute := finderRoute{finder.InMemFinder{postcodes, pharmacies}}
+	inMemFinder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
+	handler := finder.NewPharmacyHandler(&inMemFinder)
 
-	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/find-pharmacies/:postcode"), finderRoute.serveHTTP)
-	mux.HandleFunc(pat.Get("/"), search)
-	fmt.Println("Started server API: http://localhost:8000/")
-	fmt.Println("Search API: http://localhost:8000/find-pharmacies/:postcode")
-	http.ListenAndServe("0.0.0.0:8000", mux)
+	fmt.Println("Started Pharmacys API: http://localhost:8000/pharmacies/:postcode")
+	http.ListenAndServe("0.0.0.0:8000", handler)
 }

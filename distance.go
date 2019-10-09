@@ -1,4 +1,4 @@
-package nhsfinder
+package pharmacyfinder
 
 // Lovingly copied and pasted and edited from
 // https://gist.github.com/cdipaolo/d3f8db3848278b49db68

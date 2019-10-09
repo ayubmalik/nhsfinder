@@ -37,6 +37,6 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 }
 
 func mktempdir() string {
-	dir, _ := ioutil.TempDir("", "nhsfinder")
+	dir, _ := ioutil.TempDir("", "pharmacyfinder")
 	return dir
 }
