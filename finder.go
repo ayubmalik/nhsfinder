@@ -50,14 +50,13 @@ type InMemFinder struct {
 
 // ByPostcode finds nearest 10
 func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
-	distances := make(map[float64]Pharmacy, 0)
+	distances := make(map[float64]Pharmacy)
 	start := time.Now()
 	for _, pharmacy := range pf.Pharmacies {
 		fromLatLng := pf.LatLngs[postcode]
 		dist := Distance(fromLatLng, pharmacy.LatLng)
 		distances[dist] = pharmacy
 	}
-
 	end := time.Now().Sub(start)
 	log.Printf("Calculated %d distances from %s in %v\n", len(distances), postcode, end)
 
@@ -65,6 +64,7 @@ func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
 	for k := range distances {
 		keys = append(keys, k)
 	}
+
 	sort.Float64s(keys)
 	result := make([]FindResult, 0)
 	for _, key := range keys {
