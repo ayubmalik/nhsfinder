@@ -42,7 +42,7 @@ type finder interface {
 	ByPostcode(postcode string) []FindResult
 }
 
-// InMemFinder is an in memory Finder
+// InMemFinder is an in memory finder
 type InMemFinder struct {
 	LatLngs    map[string]LatLng
 	Pharmacies []Pharmacy
@@ -67,7 +67,7 @@ func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
 	}
 	sort.Float64s(keys)
 	result := make([]FindResult, 0)
-	for _, key := range keys[0:10] {
+	for _, key := range keys {
 		p := distances[key]
 		result = append(result, FindResult{key, p})
 	}
