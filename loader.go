@@ -7,9 +7,11 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // LoadLatLngs loads a map of string postcodes to its LatLng
+// TODO replace with custom type
 func LoadLatLngs(filename string) map[string]LatLng {
 	datafile, _ := os.Open(filename)
 	defer datafile.Close()
@@ -29,7 +31,11 @@ func LoadLatLngs(filename string) map[string]LatLng {
 		value := record[1]
 		lat, _ := strconv.ParseFloat(record[2], 64)
 		lng, _ := strconv.ParseFloat(record[3], 64)
-		postcodes[value] = LatLng{
+
+		// remove spaces from key
+		key := strings.TrimSpace(value)
+		key = strings.Replace(key, " ", "", 2)
+		postcodes[key] = LatLng{
 			Lat: lat,
 			Lng: lng,
 		}
