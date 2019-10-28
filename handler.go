@@ -15,7 +15,7 @@ const (
 
 // PharmacyHandler handles pharmacy http API
 type PharmacyHandler struct {
-	finder Finder
+	finder finder
 	http.Handler
 }
 
@@ -30,7 +30,7 @@ func (ph *PharmacyHandler) findByPostcode(w http.ResponseWriter, r *http.Request
 }
 
 // NewPharmacyHandler constructor to create handlers
-func NewPharmacyHandler(finder Finder) *PharmacyHandler {
+func NewPharmacyHandler(finder finder) *PharmacyHandler {
 	ph := new(PharmacyHandler)
 	ph.finder = finder
 	mux := goji.NewMux()

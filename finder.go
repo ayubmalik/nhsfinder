@@ -38,8 +38,7 @@ type FindResult struct {
 	Pharmacy Pharmacy
 }
 
-// Finder finds pharmacies
-type Finder interface {
+type finder interface {
 	ByPostcode(postcode string) []FindResult
 }
 
