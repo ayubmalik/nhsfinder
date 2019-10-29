@@ -48,7 +48,7 @@ type InMemFinder struct {
 	Pharmacies []Pharmacy
 }
 
-// ByPostcode finds nearest 10
+// ByPostcode finds nearest 10 <- should make param
 func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
 	distances := make(map[float64]Pharmacy)
 	start := time.Now()
@@ -64,12 +64,17 @@ func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
 	for k := range distances {
 		keys = append(keys, k)
 	}
-
 	sort.Float64s(keys)
-	result := make([]FindResult, 0)
-	for _, key := range keys {
-		p := distances[key]
-		result = append(result, FindResult{key, p})
+
+	max := 10
+	if len(keys) < max {
+		max = len(keys)
+	}
+
+	result := make([]FindResult, 0, max)
+	for i := 0; i < max; i++ {
+		p := distances[keys[i]]
+		result = append(result, FindResult{keys[i], p})
 	}
 	return result
 }
