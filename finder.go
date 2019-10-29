@@ -48,8 +48,15 @@ type InMemFinder struct {
 	Pharmacies []Pharmacy
 }
 
+// NewInMemFinder returns an in memory finder with files loaded from default paths
+func NewInMemFinder() InMemFinder {
+	latLngs := LoadLatLngs("data/ukpostcodes.csv")
+	pharmacies := LoadPharmacies("data/pharmacies.csv")
+	return InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
+}
+
 // ByPostcode finds nearest 10 <- should make param
-func (pf *InMemFinder) ByPostcode(postcode string) []FindResult {
+func (pf InMemFinder) ByPostcode(postcode string) []FindResult {
 	distances := make(map[float64]Pharmacy)
 	start := time.Now()
 	for _, pharmacy := range pf.Pharmacies {
