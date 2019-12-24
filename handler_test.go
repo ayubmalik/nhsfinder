@@ -18,7 +18,7 @@ func TestPharmacyHandler(t *testing.T) {
 	t.Run("pharmacies/postcode delegates to finder valid postcode", func(t *testing.T) {
 
 		finder := StubFinderFunc(func(postcode string) []FindResult {
-			return []FindResult{FindResult{Distance: 1.0, Pharmacy: Pharmacy{Name: "pharmacy1"}}}
+			return []FindResult{{Distance: 1.0, Pharmacy: Pharmacy{Name: "pharmacy1"}}}
 		})
 
 		handler := NewPharmacyHandler(finder)
@@ -47,7 +47,7 @@ func TestPharmacyHandler(t *testing.T) {
 	t.Run("pharmacies/postcode passes postcode path param valid postcode", func(t *testing.T) {
 
 		finder := StubFinderFunc(func(postcode string) []FindResult {
-			return []FindResult{FindResult{Pharmacy: Pharmacy{Name: postcode}}}
+			return []FindResult{{Pharmacy: Pharmacy{Name: postcode}}}
 		})
 
 		handler := NewPharmacyHandler(finder)

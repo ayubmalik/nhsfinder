@@ -16,9 +16,9 @@ func TestCreatePharmacies(t *testing.T) {
 		inputFile := "testdata/sample-edispensary.csv"
 		outputFile := "/tmp/pharmacies.csv"
 		latLngs := map[string]pharmacyfinder.LatLng{
-			"SK7 5LD":  pharmacyfinder.LatLng{Lat: 51.000000, Lng: 1.000000},
-			"LS2 8PJ":  pharmacyfinder.LatLng{Lat: 52.000000, Lng: 2.000000},
-			"TN27 9AA": pharmacyfinder.LatLng{Lat: 53.000000, Lng: 3.000000}}
+			"SK7 5LD":  {Lat: 51.000000, Lng: 1.000000},
+			"LS2 8PJ":  {Lat: 52.000000, Lng: 2.000000},
+			"TN27 9AA": {Lat: 53.000000, Lng: 3.000000}}
 
 		if err := CreatePharmacies(inputFile, latLngs, outputFile); err != nil {
 			t.Fatalf("%v", err)

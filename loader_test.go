@@ -30,9 +30,9 @@ func TestLoadLatLngs(t *testing.T) {
 func TestLoadPharmacies(t *testing.T) {
 
 	tests := []Pharmacy{
-		Pharmacy{ODSCode: "FA002", Name: "ROWLANDS PHARMACY", LatLng: LatLng{53.372375, -2.127355}},
-		Pharmacy{ODSCode: "FA007", Name: "ROWLANDS PHARMACY", LatLng: LatLng{51.740496, 0.689189}},
-		Pharmacy{ODSCode: "FA008", Name: "BOOTS UK LIMITED", LatLng: LatLng{53.802136, -1.544251}},
+		{ODSCode: "FA002", Name: "ROWLANDS PHARMACY", LatLng: LatLng{53.372375, -2.127355}},
+		{ODSCode: "FA007", Name: "ROWLANDS PHARMACY", LatLng: LatLng{51.740496, 0.689189}},
+		{ODSCode: "FA008", Name: "BOOTS UK LIMITED", LatLng: LatLng{53.802136, -1.544251}},
 	}
 
 	t.Run("load pharmacies from CSV", func(t *testing.T) {
