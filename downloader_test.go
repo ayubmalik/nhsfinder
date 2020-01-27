@@ -1,32 +1,44 @@
-package data
+package pharmacyfinder
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"testing"
 )
 
-func TestHTTPFetcher_Fetch(t *testing.T) {
+type mockDownloader struct {
+	contents string
+}
 
-	tmpDir := mktempdir()
+func (m mockDownloader) Download(src, destDir string) error {
+	s := path.Base((src))
+	d, _ := os.Create(path.Join(destDir, s))
+	defer d.Close()
+	io.WriteString(d, m.contents)
+	return nil
+}
+
+func TestHTTPFetcher_Fetch(t *testing.T) {
+	tmpDir := tempDir()
 	defer func() {
-		os.Remove(tmpDir)
+		os.RemoveAll(tmpDir)
 	}()
 
 	msg := "hello, world"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// w.WriteHeader(http.StatusOK)
 		w.Write([]byte(msg))
 	}))
 	defer server.Close()
 
 	src := server.URL
-	dest := tmpDir + "/hello.txt"
+	dest := path.Join(tmpDir, "hello.txt")
 
-	fetcher := HTTPFetcher{}
-	fetcher.Fetch(src, dest)
+	downloader := HTTPDownloader{}
+	downloader.Download(src, dest)
 
 	contents, _ := ioutil.ReadFile(dest)
 	got := string(contents)
@@ -36,7 +48,7 @@ func TestHTTPFetcher_Fetch(t *testing.T) {
 	}
 }
 
-func mktempdir() string {
+func tempDir() string {
 	dir, _ := ioutil.TempDir("", "pharmacyfinder")
 	return dir
 }

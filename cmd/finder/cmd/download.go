@@ -17,8 +17,19 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
 
+	"github.com/ayubmalik/pharmacyfinder"
 	"github.com/spf13/cobra"
+)
+
+// TODO: move to config file/viper
+const (
+	dataDir     = "data"
+	pharmacyCSV = "http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv"
+	gpCSV       = "http://media.nhschoices.nhs.uk/data/foi/GP.csv"
 )
 
 // downloadCmd represents the download command
@@ -39,8 +50,33 @@ For pharmacies, two files are downloaded. For GP's only one file...
 	},
 	ValidArgs: []string{"pharmacy", "gp"},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("download called with", args)
+		org := args[0]
+		switch org {
+		case "gps":
+			downloadGP()
+		default:
+			downloadPharmacy()
+		}
 	},
+}
+
+func downloadGP() {
+}
+
+func downloadPharmacy() {
+	tmpDir, err := ioutil.TempDir("", "finder-")
+	if err != nil {
+		panic(err)
+	}
+	defer func() { os.RemoveAll(tmpDir) }()
+
+	base := path.Base(pharmacyCSV)
+	destFile := path.Join(tmpDir, base)
+
+	downloader := pharmacyfinder.HTTPDownloader{}
+	downloader.Download(pharmacyCSV, destFile)
+
+	os.Rename(destFile, path.Join(dataDir, base))
 }
 
 func init() {
@@ -48,11 +84,4 @@ func init() {
 
 	// Here you will define your flags and configuration settings.
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// downloadCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// downloadCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
