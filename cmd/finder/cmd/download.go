@@ -34,7 +34,7 @@ const (
 
 // downloadCmd represents the download command
 var downloadCmd = &cobra.Command{
-	Use:   "download",
+	Use:   "download pharmacy|gp",
 	Short: "Download NHS pharmacy or GP data",
 	Long: `Download NHS pharmacy or GP data.
 	The CSV data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets)
