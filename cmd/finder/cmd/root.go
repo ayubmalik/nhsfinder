@@ -36,8 +36,8 @@ It has commands to search and download and manage source NHS data files.
 To search for pharmacies by postcode:
 	finder search pharmacies M1 1AA
 
-To dowload data for pharmacies:
-	finder download pharmacies
+To download pharmacy data:
+	finder download pharmacy
 `,
 }
 

@@ -35,12 +35,11 @@ const (
 // downloadCmd represents the download command
 var downloadCmd = &cobra.Command{
 	Use:   "download",
-	Short: "Download NHS data files for pharmacies or GPs",
-	Long: `Download NHS data files for pharmacies or GPs.
-	The CSV data files are downloaded from the NHS ODS datasets at https://digital.nhs.uk/services/organisation-data-service/data-downloads.
-The data files will also be sanitised and simplified where required.
-Valid options are 'pharmacies' or 'gps'.
-For pharmacies, two files are downloaded. For GP's only one file...
+	Short: "Download NHS pharmacy or GP data",
+	Long: `Download NHS pharmacy or GP data.
+	The CSV data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets)
+The data is also sanitised and simplified where required.
+Valid options are 'pharmacy' or 'gp'.
 `,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
