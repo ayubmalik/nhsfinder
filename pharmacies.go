@@ -29,7 +29,6 @@ func SimplifyPharmacies(pharmacyCSV string, outputCsv string) error {
 	reader.Read() // skip first
 	rows, _ := reader.ReadAll()
 
-	fmt.Println(len(rows))
 	pharmacies := []string{}
 	for _, row := range rows {
 		pcode := row[13]

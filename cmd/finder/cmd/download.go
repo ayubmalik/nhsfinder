@@ -21,7 +21,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/ayubmalik/pharmacyfinder"
+	finder "github.com/ayubmalik/pharmacyfinder"
 	"github.com/spf13/cobra"
 )
 
@@ -73,10 +73,10 @@ func downloadPharmacy() {
 	base := path.Base(pharmacyCSV)
 	destFile := path.Join(tmpDir, base)
 
-	downloader := pharmacyfinder.HTTPDownloader{}
+	downloader := finder.HTTPDownloader{}
 	downloader.Download(pharmacyCSV, destFile)
 
-	os.Rename(destFile, path.Join(dataDir, base))
+	finder.SimplifyPharmacies(destFile, path.Join(dataDir, "pharmacies.csv"))
 }
 
 func init() {
