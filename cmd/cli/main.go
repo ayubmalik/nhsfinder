@@ -9,6 +9,7 @@ import (
 	"github.com/ayubmalik/pharmacyfinder"
 )
 
+// TODO: delete this
 func main() {
 	fmt.Println("Loading data...")
 	latLngs := pharmacyfinder.LoadLatLngs("data/ukpostcodes.csv")
