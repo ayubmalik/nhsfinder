@@ -37,9 +37,8 @@ var downloadCmd = &cobra.Command{
 	Use:   "download pharmacy|gp",
 	Short: "Download NHS pharmacy or GP data",
 	Long: `Download NHS pharmacy or GP data.
-	The CSV data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets)
+The CSV data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets).
 The data is also sanitised and simplified where required.
-Valid options are 'pharmacy' or 'gp'.
 `,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
@@ -54,7 +53,7 @@ Valid options are 'pharmacy' or 'gp'.
 		case "gps":
 			downloadGP()
 		default:
-			downloadPharmacy()
+			downloadPharmacy(&finder.HTTPDownloader{}, dataDir)
 		}
 	},
 }
@@ -62,7 +61,7 @@ Valid options are 'pharmacy' or 'gp'.
 func downloadGP() {
 }
 
-func downloadPharmacy() {
+func downloadPharmacy(d finder.Downloader, outputDir string) {
 	tmpDir, err := ioutil.TempDir("", "finder-")
 	if err != nil {
 		panic(err)
@@ -72,15 +71,14 @@ func downloadPharmacy() {
 	base := path.Base(pharmacyCSV)
 	destFile := path.Join(tmpDir, base)
 
-	downloader := finder.HTTPDownloader{}
-	downloader.Download(pharmacyCSV, destFile)
-
-	finder.SimplifyPharmacies(destFile, path.Join(dataDir, "pharmacies.csv"))
+	d.Download(pharmacyCSV, destFile)
+	finder.SimplifyPharmacies(destFile, path.Join(outputDir, "pharmacies.csv"))
 }
 
 func init() {
 	rootCmd.AddCommand(downloadCmd)
+}
 
-	// Here you will define your flags and configuration settings.
-
+func debug(msg string) {
+	fmt.Println("debug:", msg)
 }

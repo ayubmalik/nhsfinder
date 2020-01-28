@@ -1,7 +1,6 @@
 package pharmacyfinder
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -10,19 +9,7 @@ import (
 	"testing"
 )
 
-type mockDownloader struct {
-	contents string
-}
-
-func (m mockDownloader) Download(src, destDir string) error {
-	s := path.Base((src))
-	d, _ := os.Create(path.Join(destDir, s))
-	defer d.Close()
-	io.WriteString(d, m.contents)
-	return nil
-}
-
-func TestHTTPFetcher_Fetch(t *testing.T) {
+func TestHTTPDownloader(t *testing.T) {
 	tmpDir := tempDir()
 	defer func() {
 		os.RemoveAll(tmpDir)
