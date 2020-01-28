@@ -27,9 +27,10 @@ import (
 
 // TODO: move to config file/viper
 const (
-	dataDir     = "data"
-	pharmacyCSV = "http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv"
-	gpCSV       = "http://media.nhschoices.nhs.uk/data/foi/GP.csv"
+	dataDir      = "data"
+	pharmacyCSV  = "http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv"
+	gpCSV        = "http://media.nhschoices.nhs.uk/data/foi/GP.csv"
+	postcodesZip = "https://www.freemaptools.com/download/full-postcodes/ukpostcodes.zip"
 )
 
 // downloadCmd represents the download command
@@ -51,14 +52,14 @@ The data is also sanitised and simplified where required.
 		org := args[0]
 		switch org {
 		case "pharmacy":
-			downloadCSV(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacies.csv"))
+			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacies.csv"))
 		default:
-			downloadCSV(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
+			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
 		}
 	},
 }
 
-func downloadCSV(d finder.Downloader, outputFile string) {
+func downloadODS(d finder.Downloader, outputFile string) {
 	tmpDir, err := ioutil.TempDir("", "finder-")
 	if err != nil {
 		panic(err)
