@@ -9,14 +9,15 @@ import (
 	"strings"
 )
 
-// SimplifyPharmacies takes NHS ODS Pharmacy.CSV file and creates a simplified CSV.
+// Simplify takes NHS ODS data from a file and creates a simplified CSV.
 // The resulting pharmacy CSV file contains no header and only the following fields:
 //	 ODSCode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Email, Lat, Lng
 //
 // For source data see:
 // 	http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv
-func SimplifyPharmacies(pharmacyCSV string, outputCsv string) error {
-	f, err := os.Open(pharmacyCSV)
+// 	http://media.nhschoices.nhs.uk/data/foi/GP.csv
+func Simplify(inputCSV string, outputCSV string) error {
+	f, err := os.Open(inputCSV)
 	if err != nil {
 		return err
 	}
@@ -29,16 +30,16 @@ func SimplifyPharmacies(pharmacyCSV string, outputCsv string) error {
 	reader.Read() // skip first
 	rows, _ := reader.ReadAll()
 
-	pharmacies := []string{}
+	orgs := []string{}
 	for _, row := range rows {
 		pcode := row[13]
 		lat := row[14]
 		lng := row[15]
 		p := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
 			row[1], clean(row[7]), clean(row[8]), clean(row[9]), clean(row[10]), clean(row[11]), pcode, row[18], row[19], lat, lng)
-		pharmacies = append(pharmacies, p)
+		orgs = append(orgs, p)
 	}
-	return write(outputCsv, pharmacies)
+	return write(outputCSV, orgs)
 }
 
 func clean(src string) string {

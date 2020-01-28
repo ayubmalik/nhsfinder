@@ -34,13 +34,27 @@ func TestDownloadPharmacy(t *testing.T) {
 	destDir := tempDir()
 	defer func() { os.RemoveAll(destDir) }()
 
+	want := path.Join(destDir, "pharmacies.csv")
 	downloader := mockDownloader{fromFile: "../../../testdata/Pharmacy.csv"}
-	downloadPharmacy(downloader, destDir)
+	downloadCSV(downloader, want)
 
-	want := "pharmacies.csv"
-	info, err := os.Stat(path.Join(destDir, want))
-	if err != nil || info.Name() != want {
-		t.Errorf("wanted file not created: %v!", err)
+	info, err := os.Stat(want)
+	if err != nil || info.Name() != path.Base(want) {
+		t.Errorf("wanted file not createdL err %v ,file %v", err, info)
+	}
+}
+
+func TestDownloadGP(t *testing.T) {
+	destDir := tempDir()
+	defer func() { os.RemoveAll(destDir) }()
+
+	want := path.Join(destDir, "gps.csv")
+	downloader := mockDownloader{fromFile: "../../../testdata/GP.csv"}
+	downloadCSV(downloader, want)
+
+	info, err := os.Stat(want)
+	if err != nil || info.Name() != path.Base(want) {
+		t.Errorf("wanted file not createdL err %v ,file %v", err, info)
 	}
 }
 

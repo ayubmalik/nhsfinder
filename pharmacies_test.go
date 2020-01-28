@@ -15,7 +15,7 @@ func TestSimplifyPharmacies(t *testing.T) {
 		goldenFile := "testdata/pharmacies.golden.csv"
 		outputFile := "/tmp/pharmacies.csv"
 
-		if err := SimplifyPharmacies(inputFile, outputFile); err != nil {
+		if err := Simplify(inputFile, outputFile); err != nil {
 			t.Fatalf("%v", err)
 		}
 

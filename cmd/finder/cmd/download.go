@@ -50,35 +50,28 @@ The data is also sanitised and simplified where required.
 	Run: func(cmd *cobra.Command, args []string) {
 		org := args[0]
 		switch org {
-		case "gps":
-			downloadGP()
+		case "pharmacy":
+			downloadCSV(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacies.csv"))
 		default:
-			downloadPharmacy(&finder.HTTPDownloader{}, dataDir)
+			downloadCSV(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
 		}
 	},
 }
 
-func downloadGP() {
-}
-
-func downloadPharmacy(d finder.Downloader, outputDir string) {
+func downloadCSV(d finder.Downloader, outputFile string) {
 	tmpDir, err := ioutil.TempDir("", "finder-")
 	if err != nil {
 		panic(err)
 	}
 	defer func() { os.RemoveAll(tmpDir) }()
 
-	base := path.Base(pharmacyCSV)
+	base := path.Base(gpCSV)
 	destFile := path.Join(tmpDir, base)
 
-	d.Download(pharmacyCSV, destFile)
-	finder.SimplifyPharmacies(destFile, path.Join(outputDir, "pharmacies.csv"))
+	d.Download(gpCSV, destFile)
+	finder.Simplify(destFile, outputFile)
 }
 
 func init() {
 	rootCmd.AddCommand(downloadCmd)
-}
-
-func debug(msg string) {
-	fmt.Println("debug:", msg)
 }
