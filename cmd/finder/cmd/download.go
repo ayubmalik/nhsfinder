@@ -28,7 +28,6 @@ import (
 
 // TODO: move to config file/viper
 const (
-	dataDir      = "data"
 	pharmacyCSV  = "http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv"
 	gpCSV        = "http://media.nhschoices.nhs.uk/data/foi/GP.csv"
 	postcodesZip = "https://www.getthedata.com/downloads/open_postcode_geo.csv.zip"

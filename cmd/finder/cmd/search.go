@@ -19,6 +19,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 
 	finder "github.com/ayubmalik/pharmacyfinder"
@@ -54,7 +55,7 @@ func searchPharmacy(dataDir string, postcode string) {
 
 	fmt.Println("Loading data from ", dataDir)
 
-	latLngs := finder.LoadLatLngs("data/ukpostcodes.csv")
+	latLngs := finder.LoadLatLngs(path.Join(dataDir, "postcode.csv"))
 	fmt.Printf("Loaded %d postcodes\n", len(latLngs))
 
 	pharmacies := finder.LoadPharmacies("data/pharmacies.csv")
