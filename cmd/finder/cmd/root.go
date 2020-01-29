@@ -24,7 +24,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	dataDir string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "finder",
@@ -48,10 +51,9 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
 	rootCmd.PersistentFlags().StringP("data", "d", "data", "directory for storing and loading required CSV data files")
-	fmt.Println(rootCmd.PersistentFlags().Lookup("data"))
+	viper.BindPFlag("data", rootCmd.PersistentFlags().Lookup("data"))
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
+	// local flags
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 

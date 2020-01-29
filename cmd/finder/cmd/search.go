@@ -23,6 +23,7 @@ import (
 
 	finder "github.com/ayubmalik/pharmacyfinder"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // searchCmd represents the search command
@@ -38,16 +39,13 @@ var searchPharmacyCmd = &cobra.Command{
 	Short: "search for pharmacy by postcode",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		f := cmd.PersistentFlags()
-		fmt.Println("FZZZ", f)
-		data := cmd.PersistentFlags().Lookup("data").Name
+		data := viper.GetString("data")
 		searchPharmacy(data, args[0])
 	},
 }
 
 func init() {
-	p := searchCmd.PersistentFlags()
-	fmt.Printf("p: %v", p)
+
 	searchCmd.AddCommand(searchPharmacyCmd)
 	rootCmd.AddCommand(searchCmd)
 }
