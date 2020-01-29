@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -37,33 +36,44 @@ const (
 
 // downloadCmd represents the download command
 var downloadCmd = &cobra.Command{
-	Use:   "download pharmacy|gp|postcode",
-	Short: "Download NHS pharmacy or GP data or UK postcode data",
-	Long: `Download NHS pharmacy or GP data or UK postcode data.
-The NHS data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets).
-The UK postcode data is downloaded from getthedata.com.
+	Use:   "download",
+	Short: "Download source data required by this application",
+	Long: `Download source data required by this application.
+The NHS data is downloaded from NHS Choices. (TODO: use ODS datasets).
+The UK postcode data is downloaded from http://getthedata.com.
 The data is also sanitised and simplified where required.
 `,
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("requires at least one of: %v", cmd.ValidArgs)
-		}
-		return cobra.OnlyValidArgs(cmd, args)
-	},
-	ValidArgs: []string{"pharmacy", "gp", "postcode"},
+}
+
+var downloadPharmacyCmd = &cobra.Command{
+	Use:   "pharmacy",
+	Short: "download pharmacy data",
 	Run: func(cmd *cobra.Command, args []string) {
-		org := args[0]
-		switch org {
-		case "pharmacy":
-			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacies.csv"))
-		case "gps":
-			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
-		case "postcode":
-			downloadPostcodes(&finder.HTTPDownloader{}, path.Join(dataDir, "ukpostcodes.csv"))
-		default:
-			cmd.Usage()
-		}
+		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacy.csv"))
 	},
+}
+
+var downloadGPCmd = &cobra.Command{
+	Use:   "gp",
+	Short: "download GP data",
+	Run: func(cmd *cobra.Command, args []string) {
+		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gp.csv"))
+	},
+}
+
+var downloadPostcodeCmd = &cobra.Command{
+	Use:   "postcode",
+	Short: "download postcode data",
+	Run: func(cmd *cobra.Command, args []string) {
+		downloadPostcodes(&finder.HTTPDownloader{}, path.Join(dataDir, "postcode.csv"))
+	},
+}
+
+func init() {
+	downloadCmd.AddCommand(downloadPharmacyCmd)
+	downloadCmd.AddCommand(downloadGPCmd)
+	downloadCmd.AddCommand(downloadPostcodeCmd)
+	rootCmd.AddCommand(downloadCmd)
 }
 
 func downloadODS(d finder.Downloader, outputFile string) {
@@ -85,7 +95,7 @@ func downloadPostcodes(d finder.Downloader, outputFile string) {
 	if err != nil {
 		panic(err)
 	}
-	//defer func() { os.RemoveAll(tmpDir) }()
+	defer func() { os.RemoveAll(tmpDir) }()
 
 	base := path.Base(postcodesZip)
 	tmpFile := path.Join(tmpDir, base)
@@ -93,7 +103,6 @@ func downloadPostcodes(d finder.Downloader, outputFile string) {
 	d.Download(postcodesZip, tmpFile)
 	archiver.Unarchive(tmpFile, tmpDir)
 	csvFile := path.Join(tmpDir, strings.Replace(base, ".zip", "", 1))
-	fmt.Println(csvFile)
 
 	cf, err := os.Open(csvFile)
 	if err != nil {
@@ -101,16 +110,11 @@ func downloadPostcodes(d finder.Downloader, outputFile string) {
 	}
 	defer cf.Close()
 
-	of, err := os.Open(outputFile)
+	of, err := os.Create(outputFile)
 	if err != nil {
 		panic(err)
 	}
 	defer of.Close()
 
-	fmt.Println(outputFile)
 	finder.SimplifyPostcodes(cf, of)
-}
-
-func init() {
-	rootCmd.AddCommand(downloadCmd)
 }

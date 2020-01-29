@@ -27,17 +27,10 @@ import (
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "finder search | download",
+	Use:   "finder",
 	Short: "finder is a CLI for managing NHS Finder",
 	Long: `Finder is a CLI for the NHS Finder application.
-
-It has commands to search and download and manage source NHS data files.
-
-To search for pharmacies by postcode:
-	finder search pharmacies M1 1AA
-
-To download pharmacy data:
-	finder download pharmacy
+You can search for NHS organisations by postcode or download source data.
 `,
 }
 
@@ -53,11 +46,9 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
+	rootCmd.PersistentFlags().StringP("data", "d", "data", "directory for storing and loading required CSV data files")
+	fmt.Println(rootCmd.PersistentFlags().Lookup("data"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -67,7 +58,6 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
@@ -76,10 +66,8 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-
-		// Search config in home directory with name ".cli" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".cli")
+		viper.SetConfigName(".finder")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
