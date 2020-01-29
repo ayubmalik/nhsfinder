@@ -20,8 +20,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 
 	finder "github.com/ayubmalik/pharmacyfinder"
+	"github.com/mholt/archiver"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +32,7 @@ const (
 	dataDir      = "data"
 	pharmacyCSV  = "http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv"
 	gpCSV        = "http://media.nhschoices.nhs.uk/data/foi/GP.csv"
-	postcodesZip = "https://www.freemaptools.com/download/full-postcodes/ukpostcodes.zip"
+	postcodesZip = "https://www.getthedata.com/downloads/open_postcode_geo.csv.zip"
 )
 
 // downloadCmd represents the download command
@@ -53,8 +55,12 @@ The data is also sanitised and simplified where required.
 		switch org {
 		case "pharmacy":
 			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacies.csv"))
-		default:
+		case "gps":
 			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
+		case "postcode":
+
+		default:
+			cmd.Usage()
 		}
 	},
 }
@@ -70,7 +76,23 @@ func downloadODS(d finder.Downloader, outputFile string) {
 	destFile := path.Join(tmpDir, base)
 
 	d.Download(gpCSV, destFile)
-	finder.Simplify(destFile, outputFile)
+	finder.SimplifyODS(destFile, outputFile)
+}
+
+func downloadPostcodes(d finder.Downloader, outputFile string) {
+	tmpDir, err := ioutil.TempDir("", "finder-")
+	if err != nil {
+		panic(err)
+	}
+	defer func() { os.RemoveAll(tmpDir) }()
+
+	base := path.Base(postcodesZip)
+	destFile := path.Join(tmpDir, base)
+
+	d.Download(postcodesZip, destFile)
+	archiver.Unarchive(destFile, tmpDir)
+	csv := path.Join(tmpDir, strings.Replace(base, ".zip", "", 1))
+	fmt.Println(csv)
 }
 
 func init() {

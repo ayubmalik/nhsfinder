@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-// Simplify takes NHS ODS data from a file and creates a simplified CSV.
+// SimplifyODS takes NHS ODS data from a file and creates a simplified CSV.
 // The resulting pharmacy CSV file contains no header and only the following fields:
 //	 ODSCode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Email, Lat, Lng
 //
 // For source data see:
 // 	http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv
 // 	http://media.nhschoices.nhs.uk/data/foi/GP.csv
-func Simplify(inputCSV string, outputCSV string) error {
+func SimplifyODS(inputCSV string, outputCSV string) error {
 	f, err := os.Open(inputCSV)
 	if err != nil {
 		return err
