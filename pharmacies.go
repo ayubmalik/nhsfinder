@@ -2,20 +2,24 @@ package pharmacyfinder
 
 import (
 	"encoding/csv"
+	"io"
 
 	"fmt"
-	"golang.org/x/text/encoding/charmap"
 	"os"
 	"strings"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 // SimplifyODS takes NHS ODS data from a file and creates a simplified CSV.
-// The resulting pharmacy CSV file contains no header and only the following fields:
+// The resulting CSV file contains no header and only the following fields:
 //	 ODSCode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Email, Lat, Lng
 //
 // For source data see:
 // 	http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv
 // 	http://media.nhschoices.nhs.uk/data/foi/GP.csv
+//
+// TODO:use io.Reader / io.Writer params
 func SimplifyODS(inputCSV string, outputCSV string) error {
 	f, err := os.Open(inputCSV)
 	if err != nil {
@@ -40,6 +44,44 @@ func SimplifyODS(inputCSV string, outputCSV string) error {
 		orgs = append(orgs, p)
 	}
 	return write(outputCSV, orgs)
+}
+
+// SimplifyPostcodes takes UK postcode and geo data from a file and creates a simplified CSV.
+// The resulting CSV file contains no header and "live" postcodes from England only, with the following fields:
+//	 Postcode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Email, Lat, Lng
+//
+// For source data see:
+// 	https://www.getthedata.com/open-postcode-geo
+//
+// TODO:use io.Reader / io.Writer params
+func SimplifyPostcodes(r io.Reader, w io.Writer) error {
+	reader := csv.NewReader(r)
+	reader.Comma = ','
+	reader.TrimLeadingSpace = true
+	reader.Read() // skip first
+	rows, _ := reader.ReadAll()
+
+	postcodes := []string{}
+	for _, row := range rows {
+		if row[1] == "live" && row[6] == "England" {
+			pcode := row[0]
+			lat := row[7]
+			lng := row[8]
+			p := fmt.Sprintf("%s,%s,%s", pcode, lat, lng)
+			fmt.Println("p", p)
+			postcodes = append(postcodes, p)
+		}
+	}
+
+	last := len(postcodes) - 1
+	for i, v := range postcodes {
+		nl := "\n"
+		if i == last {
+			nl = ""
+		}
+		fmt.Fprintf(w, "%s%s", v, nl)
+	}
+	return nil
 }
 
 func clean(src string) string {

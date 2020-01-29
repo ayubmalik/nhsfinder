@@ -37,10 +37,11 @@ const (
 
 // downloadCmd represents the download command
 var downloadCmd = &cobra.Command{
-	Use:   "download pharmacy|gp",
-	Short: "Download NHS pharmacy or GP data",
-	Long: `Download NHS pharmacy or GP data.
-The CSV data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets).
+	Use:   "download pharmacy|gp|postcode",
+	Short: "Download NHS pharmacy or GP data or UK postcode data",
+	Long: `Download NHS pharmacy or GP data or UK postcode data.
+The NHS data is downloaded from the NHS Choices dataset for now. (TODO: use ODS datasets).
+The UK postcode data is downloaded from getthedata.com.
 The data is also sanitised and simplified where required.
 `,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -49,7 +50,7 @@ The data is also sanitised and simplified where required.
 		}
 		return cobra.OnlyValidArgs(cmd, args)
 	},
-	ValidArgs: []string{"pharmacy", "gp"},
+	ValidArgs: []string{"pharmacy", "gp", "postcode"},
 	Run: func(cmd *cobra.Command, args []string) {
 		org := args[0]
 		switch org {
@@ -58,7 +59,7 @@ The data is also sanitised and simplified where required.
 		case "gps":
 			downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gps.csv"))
 		case "postcode":
-
+			downloadPostcodes(&finder.HTTPDownloader{}, path.Join(dataDir, "ukpostcodes.csv"))
 		default:
 			cmd.Usage()
 		}
@@ -73,10 +74,10 @@ func downloadODS(d finder.Downloader, outputFile string) {
 	defer func() { os.RemoveAll(tmpDir) }()
 
 	base := path.Base(gpCSV)
-	destFile := path.Join(tmpDir, base)
+	tmpFile := path.Join(tmpDir, base)
 
-	d.Download(gpCSV, destFile)
-	finder.SimplifyODS(destFile, outputFile)
+	d.Download(gpCSV, tmpFile)
+	finder.SimplifyODS(tmpFile, outputFile)
 }
 
 func downloadPostcodes(d finder.Downloader, outputFile string) {
@@ -84,15 +85,30 @@ func downloadPostcodes(d finder.Downloader, outputFile string) {
 	if err != nil {
 		panic(err)
 	}
-	defer func() { os.RemoveAll(tmpDir) }()
+	//defer func() { os.RemoveAll(tmpDir) }()
 
 	base := path.Base(postcodesZip)
-	destFile := path.Join(tmpDir, base)
+	tmpFile := path.Join(tmpDir, base)
 
-	d.Download(postcodesZip, destFile)
-	archiver.Unarchive(destFile, tmpDir)
-	csv := path.Join(tmpDir, strings.Replace(base, ".zip", "", 1))
-	fmt.Println(csv)
+	d.Download(postcodesZip, tmpFile)
+	archiver.Unarchive(tmpFile, tmpDir)
+	csvFile := path.Join(tmpDir, strings.Replace(base, ".zip", "", 1))
+	fmt.Println(csvFile)
+
+	cf, err := os.Open(csvFile)
+	if err != nil {
+		panic(err)
+	}
+	defer cf.Close()
+
+	of, err := os.Open(outputFile)
+	if err != nil {
+		panic(err)
+	}
+	defer of.Close()
+
+	fmt.Println(outputFile)
+	finder.SimplifyPostcodes(cf, of)
 }
 
 func init() {
