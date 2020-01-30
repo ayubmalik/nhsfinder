@@ -1,4 +1,4 @@
-package pharmacyfinder
+package nhsfinder
 
 import (
 	"io/ioutil"
@@ -36,6 +36,6 @@ func TestHTTPDownloader(t *testing.T) {
 }
 
 func tempDir() string {
-	dir, _ := ioutil.TempDir("", "pharmacyfinder")
+	dir, _ := ioutil.TempDir("", "nhsfinder")
 	return dir
 }

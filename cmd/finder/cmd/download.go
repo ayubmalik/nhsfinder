@@ -21,7 +21,7 @@ import (
 	"path"
 	"strings"
 
-	finder "github.com/ayubmalik/pharmacyfinder"
+	finder "github.com/ayubmalik/nhsfinder"
 	"github.com/mholt/archiver"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	finder "github.com/ayubmalik/pharmacyfinder"
+	finder "github.com/ayubmalik/nhsfinder"
 )
 
 func main() {

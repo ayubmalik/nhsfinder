@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-cname=trams
+command=finder
 
 rm -rf dist
 
-docker build -t ayubmalik/${cname} .
+docker build -t ayubmalik/${command} .
 
-docker create -it --name ${cname} ayubmalik/${cname}
+docker create -it --name ${command} ayubmalik/${command}
 
-docker cp ${cname}:/go/src/github.com/ayubmalik/trams/dist/ .
+docker cp ${command}:/go/src/github.com/ayubmalik/${command}/dist/ .
 
-docker rm ${cname}
+docker rm ${command}

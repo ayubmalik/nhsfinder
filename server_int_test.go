@@ -1,4 +1,4 @@
-package pharmacyfinder_test
+package nhsfinder_test
 
 import (
 	"encoding/json"
@@ -6,13 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ayubmalik/pharmacyfinder"
+	"github.com/ayubmalik/nhsfinder"
 )
 
 func TestPharmaciesServer(t *testing.T) {
-	finder, _ := pharmacyfinder.NewInMemFinder()
+	finder, _ := nhsfinder.NewInMemFinder()
 
-	handler := pharmacyfinder.NewPharmacyHandler(finder)
+	handler := nhsfinder.NewPharmacyHandler(finder)
 
 	server := httptest.NewServer(handler)
 	defer server.Close()
@@ -31,7 +31,7 @@ func TestPharmaciesServer(t *testing.T) {
 	}
 
 	decoder := json.NewDecoder(res.Body)
-	var result []pharmacyfinder.FindResult
+	var result []nhsfinder.FindResult
 	decoder.Decode(&result)
 
 	got = len(result)

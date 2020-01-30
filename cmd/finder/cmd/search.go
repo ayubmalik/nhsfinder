@@ -21,7 +21,7 @@ import (
 	"path"
 	"time"
 
-	finder "github.com/ayubmalik/pharmacyfinder"
+	finder "github.com/ayubmalik/nhsfinder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

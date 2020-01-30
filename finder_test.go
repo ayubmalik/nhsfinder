@@ -1,4 +1,4 @@
-package pharmacyfinder
+package nhsfinder
 
 import (
 	"testing"

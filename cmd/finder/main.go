@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/ayubmalik/pharmacyfinder/cmd/finder/cmd"
+import "github.com/ayubmalik/nhsfinder/cmd/finder/cmd"
 
 func main() {
 	cmd.Execute()
