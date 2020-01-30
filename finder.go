@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-// LatLng is point with latitude and longitude
+// LatLng is a point of latitude and longitude.
 type LatLng struct {
 	Lat float64
 	Lng float64
 }
 
-// Address in England
+// Address in England.
 type Address struct {
 	Line1    string
 	Line2    string
@@ -36,21 +36,26 @@ type Org struct {
 	LatLng  LatLng
 }
 
-// Pharmacy is pharmacy in England.
+// Pharmacy is a pharmacy in England.
 type Pharmacy Org
 
 // GP is General Practioner in England.
 type GP Org
 
-// FindResult is a given item and distance from search query
+// FindResult is a given organisation and distance from search query
 type FindResult struct {
 	Distance float64
 	Pharmacy Pharmacy
 	GP       GP
 }
 
-type finder interface {
-	ByPostcode(postcode string) []FindResult
+// finds pharmacies
+type pharmacyFinder interface {
+	FindPharmacy(postcode string) []FindResult
+}
+
+type gpFinder interface {
+	FindGPs(postcode string) []FindResult
 }
 
 // InMemFinder is an in memory finder
@@ -58,34 +63,6 @@ type InMemFinder struct {
 	LatLngs    map[string]LatLng
 	Pharmacies []Pharmacy
 	GPs        []GP
-}
-
-// NewInMemFinder returns an in memory finder with files loaded from default paths
-// TODO: add dataDir param from viper
-func NewInMemFinder() (*InMemFinder, error) {
-	postcodeFile, err := os.Open("data/postcode.csv")
-	if err != nil {
-		return nil, err
-	}
-	defer postcodeFile.Close()
-
-	latLngs, err := LoadLatLngs(postcodeFile)
-	if err != nil {
-		return nil, err
-	}
-
-	pharmacyFile, err := os.Open("data/pharmacy.csv")
-	if err != nil {
-		return nil, err
-	}
-	defer pharmacyFile.Close()
-
-	pharmacies, err := LoadPharmacies(pharmacyFile)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not load pharmacy file: %v", err)
-		os.Exit(1)
-	}
-	return &InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}, nil
 }
 
 // FindPharmacy finds nearest 10 TODO: should make param
@@ -145,4 +122,32 @@ func (f InMemFinder) FindGPs(postcode string) []FindResult {
 		result = append(result, FindResult{Distance: keys[i], GP: gp})
 	}
 	return result
+}
+
+// NewInMemFinder returns an in memory finder with files loaded from default paths
+// TODO: add dataDir param from viper
+func NewInMemFinder() (*InMemFinder, error) {
+	postcodeFile, err := os.Open("data/postcode.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer postcodeFile.Close()
+
+	latLngs, err := LoadLatLngs(postcodeFile)
+	if err != nil {
+		return nil, err
+	}
+
+	pharmacyFile, err := os.Open("data/pharmacy.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer pharmacyFile.Close()
+
+	pharmacies, err := LoadPharmacies(pharmacyFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "could not load pharmacy file: %v", err)
+		os.Exit(1)
+	}
+	return &InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}, nil
 }

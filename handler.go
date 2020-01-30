@@ -13,28 +13,29 @@ const (
 	maxlen = 8
 )
 
-// PharmacyHandler handles pharmacy http API
-type PharmacyHandler struct {
-	finder finder
+// FinderHandler handles pharmacy http API
+type FinderHandler struct {
+	pharmacyFinder pharmacyFinder
+	gpFinder       gpFinder
 	http.Handler
 }
 
-func (ph *PharmacyHandler) findByPostcode(w http.ResponseWriter, r *http.Request) {
+func (h *FinderHandler) findByPostcode(w http.ResponseWriter, r *http.Request) {
 	postcode := pat.Param(r, "postcode")
 	if len(postcode) < minlen || len(postcode) > maxlen {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	results := ph.finder.ByPostcode(postcode)
+	results := h.pharmacyFinder.FindPharmacy(postcode)
 	json.NewEncoder(w).Encode(results)
 }
 
-// NewPharmacyHandler constructor to create handlers
-func NewPharmacyHandler(finder finder) *PharmacyHandler {
-	ph := new(PharmacyHandler)
-	ph.finder = finder
+// NewFinderHandler creates a http.Handler for finding NHS organisations
+func NewFinderHandler(pf pharmacyFinder) *FinderHandler {
+	h := new(FinderHandler)
+	h.pharmacyFinder = pf
 	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/pharmacies/postcode/:postcode"), ph.findByPostcode)
-	ph.Handler = mux
-	return ph
+	mux.HandleFunc(pat.Get("/pharmacies/postcode/:postcode"), h.findByPostcode)
+	h.Handler = mux
+	return h
 }

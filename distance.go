@@ -27,7 +27,7 @@ func distance(lat1, lon1, lat2, lon2 float64) float64 {
 	return 2 * r * math.Asin(math.Sqrt(h))
 }
 
-// Distance returns distance between 2 postcodes
+// Distance returns distance between 2 lat lng types
 func Distance(p1, p2 LatLng) float64 {
 	return distance(p1.Lat, p1.Lng, p2.Lat, p2.Lng)
 }

@@ -7,9 +7,11 @@ import (
 	"testing"
 )
 
+//FindPharmacy(postcode string) []FindResult
+//	FindGPs(postcode string) []FindResult
 type StubFinderFunc func(string) []FindResult
 
-func (sff StubFinderFunc) ByPostcode(postcode string) []FindResult {
+func (sff StubFinderFunc) FindPharmacy(postcode string) []FindResult {
 	return sff(postcode)
 }
 
@@ -21,7 +23,7 @@ func TestPharmacyHandler(t *testing.T) {
 			return []FindResult{{Distance: 1.0, Pharmacy: Pharmacy{Name: "pharmacy1"}}}
 		})
 
-		handler := NewPharmacyHandler(finder)
+		handler := NewFinderHandler(finder)
 		request, _ := http.NewRequest(http.MethodGet, "/pharmacies/postcode/m44bf", nil)
 		response := httptest.NewRecorder()
 
@@ -50,7 +52,7 @@ func TestPharmacyHandler(t *testing.T) {
 			return []FindResult{{Pharmacy: Pharmacy{Name: postcode}}}
 		})
 
-		handler := NewPharmacyHandler(finder)
+		handler := NewFinderHandler(finder)
 		request, _ := http.NewRequest(http.MethodGet, "/pharmacies/postcode/m44bf", nil)
 		response := httptest.NewRecorder()
 
@@ -70,7 +72,7 @@ func TestPharmacyHandler(t *testing.T) {
 			return []FindResult{}
 		})
 
-		handler := NewPharmacyHandler(finder)
+		handler := NewFinderHandler(finder)
 		request, _ := http.NewRequest(http.MethodGet, "/pharmacies/postcode/m444bf", nil)
 		response := httptest.NewRecorder()
 
@@ -89,7 +91,7 @@ func TestPharmacyHandler(t *testing.T) {
 			return []FindResult{}
 		})
 
-		handler := NewPharmacyHandler(finder)
+		handler := NewFinderHandler(finder)
 		request, _ := http.NewRequest(http.MethodGet, "/pharmacies/postcode/1", nil)
 		response := httptest.NewRecorder()
 
