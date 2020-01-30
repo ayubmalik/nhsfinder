@@ -24,6 +24,7 @@ import (
 	finder "github.com/ayubmalik/pharmacyfinder"
 	"github.com/mholt/archiver"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // TODO: move to config file/viper
@@ -48,6 +49,7 @@ var downloadPharmacyCmd = &cobra.Command{
 	Use:   "pharmacy",
 	Short: "download pharmacy data",
 	Run: func(cmd *cobra.Command, args []string) {
+		dataDir := viper.GetString("data")
 		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacy.csv"))
 	},
 }
@@ -56,6 +58,7 @@ var downloadGPCmd = &cobra.Command{
 	Use:   "gp",
 	Short: "download GP data",
 	Run: func(cmd *cobra.Command, args []string) {
+		dataDir := viper.GetString("data")
 		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gp.csv"))
 	},
 }
@@ -64,6 +67,7 @@ var downloadPostcodeCmd = &cobra.Command{
 	Use:   "postcode",
 	Short: "download postcode data",
 	Run: func(cmd *cobra.Command, args []string) {
+		dataDir := viper.GetString("data")
 		downloadPostcodes(&finder.HTTPDownloader{}, path.Join(dataDir, "postcode.csv"))
 	},
 }

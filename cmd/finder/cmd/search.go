@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"time"
 
 	finder "github.com/ayubmalik/pharmacyfinder"
 	"github.com/spf13/cobra"
@@ -60,7 +61,6 @@ func searchPharmacy(dataDir string, postcode string) {
 	if err != nil {
 		exitError("could not load postcode data: %v\n", err)
 	}
-	fmt.Printf("Loaded %d postcodes with latlng\n", len(latLngs))
 
 	pharmacyFile, err := os.Open(path.Join(dataDir, "pharmacy.csv"))
 	if err != nil {
@@ -72,11 +72,13 @@ func searchPharmacy(dataDir string, postcode string) {
 	if err != nil {
 		exitError("could not load pharmacy data: %v\n", err)
 	}
-	fmt.Printf("Loaded %d pharmacies with latlng\n", len(pharmacies))
 
 	// create in mem finder
 	finder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
-	results := finder.ByPostcode(postcode)
+	start := time.Now()
+	results := finder.FindPharmacy(postcode)
+	end := time.Now().Sub(start)
+	fmt.Printf("Calculated pharmacy distances from %s in %s\n", postcode, end)
 	display(results)
 }
 
@@ -86,7 +88,7 @@ func searchGP(postcode string) {
 
 func display(results []finder.FindResult) {
 	for i, r := range results {
-		fmt.Printf("%2d %7.2f %-30s %-30s %s\n", i, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
+		fmt.Printf("%2d %7.2f %-40s %-30s %8s\n", i+1, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
 	}
 }
 

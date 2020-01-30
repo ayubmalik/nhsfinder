@@ -2,10 +2,9 @@ package pharmacyfinder
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"sort"
-	"time"
+	"strings"
 )
 
 // LatLng is point with latitude and longitude
@@ -77,17 +76,15 @@ func NewInMemFinder() (*InMemFinder, error) {
 	return &InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}, nil
 }
 
-// ByPostcode finds nearest 10 <- should make param
-func (pf InMemFinder) ByPostcode(postcode string) []FindResult {
+// FindPharmacy finds nearest 10 TODO: should make param
+func (pf InMemFinder) FindPharmacy(postcode string) []FindResult {
+	postcode = strings.ReplaceAll(postcode, " ", "")
 	distances := make(map[float64]Pharmacy)
-	start := time.Now()
 	for _, pharmacy := range pf.Pharmacies {
 		fromLatLng := pf.LatLngs[postcode]
 		dist := Distance(fromLatLng, pharmacy.LatLng)
 		distances[dist] = pharmacy
 	}
-	end := time.Now().Sub(start)
-	log.Printf("Calculated %d distances from %s in %v\n", len(distances), postcode, end)
 
 	keys := make([]float64, 0, len(distances))
 	for k := range distances {

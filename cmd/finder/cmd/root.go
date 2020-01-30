@@ -26,7 +26,6 @@ import (
 
 var (
 	cfgFile string
-	dataDir string
 )
 
 var rootCmd = &cobra.Command{
