@@ -1,10 +1,18 @@
 package pharmacyfinder
 
 import (
+	"fmt"
+	"os"
 	"testing"
 )
 
 func TestLoadLatLngs(t *testing.T) {
+
+	postcodeFile, err := os.Open("testdata/postcode.csv")
+	if err != nil {
+		t.Errorf("could not load postcode file: %v\n", err)
+	}
+	defer postcodeFile.Close()
 
 	t.Run("load lat/lng with postcode spaces removed", func(t *testing.T) {
 		tests := []struct {
@@ -16,8 +24,7 @@ func TestLoadLatLngs(t *testing.T) {
 			{input: "AB129SP", want: LatLng{57.148707080000000, -2.097806027000000}},
 		}
 
-		latLngs := LoadLatLngs("testdata/sample_ukpostcodes.csv")
-
+		latLngs, _ := LoadLatLngs(postcodeFile)
 		for _, tc := range tests {
 			got, _ := latLngs[tc.input]
 			if got != tc.want {
@@ -29,15 +36,22 @@ func TestLoadLatLngs(t *testing.T) {
 
 func TestLoadPharmacies(t *testing.T) {
 
+	pharmacyFile, err := os.Open("testdata/pharmacy.golden.csv")
+	if err != nil {
+		t.Errorf("could not open pharmacy file: %v\n", err)
+	}
+	defer pharmacyFile.Close()
+
 	tests := []Pharmacy{
-		{ODSCode: "FA002", Name: "ROWLANDS PHARMACY", LatLng: LatLng{53.372375, -2.127355}},
-		{ODSCode: "FA007", Name: "ROWLANDS PHARMACY", LatLng: LatLng{51.740496, 0.689189}},
-		{ODSCode: "FA008", Name: "BOOTS UK LIMITED", LatLng: LatLng{53.802136, -1.544251}},
+		{ODSCode: "FA512", Name: "Lords Pharmacy", LatLng: LatLng{52.244796752929688, 0.4055977463722229}},
+		{ODSCode: "FAP38", Name: "LloydsPharmacy Inside Sainsbury's", LatLng: LatLng{54.894672393798828, -2.9472866058349609}},
+		{ODSCode: "FC826", Name: "Rutland Late Night Pharmacy", LatLng: LatLng{52.670024871826172, -0.7302858829498291}},
 	}
 
 	t.Run("load pharmacies from CSV", func(t *testing.T) {
-		pharmacies := LoadPharmacies("testdata/sample_pharmacies.csv")
+		pharmacies, _ := LoadPharmacies(pharmacyFile)
 
+		fmt.Println(pharmacies)
 		for _, want := range tests {
 			found := false
 			for _, p := range pharmacies {
@@ -48,7 +62,7 @@ func TestLoadPharmacies(t *testing.T) {
 			}
 
 			if !found {
-				t.Fatalf("wanted pharmmacy (%s/%s/%v) not found in pharmacies", want.ODSCode, want.Name, want.LatLng)
+				t.Fatalf("wanted pharmacy (%s/%s/%v) not found in pharmacies", want.ODSCode, want.Name, want.LatLng)
 			}
 		}
 	})

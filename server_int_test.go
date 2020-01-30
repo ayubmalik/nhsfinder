@@ -10,7 +10,8 @@ import (
 )
 
 func TestPharmaciesServer(t *testing.T) {
-	finder := pharmacyfinder.NewInMemFinder()
+	finder, _ := pharmacyfinder.NewInMemFinder()
+
 	handler := pharmacyfinder.NewPharmacyHandler(finder)
 
 	server := httptest.NewServer(handler)

@@ -16,11 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
 	finder "github.com/ayubmalik/pharmacyfinder"
 	"github.com/spf13/cobra"
@@ -52,38 +50,34 @@ func init() {
 }
 
 func searchPharmacy(dataDir string, postcode string) {
-
-	fmt.Println("Loading data from ", dataDir)
-
-	latLngs := finder.LoadLatLngs(path.Join(dataDir, "postcode.csv"))
-	fmt.Printf("Loaded %d postcodes\n", len(latLngs))
-
-	pharmacies := finder.LoadPharmacies("data/pharmacies.csv")
-	fmt.Printf("Loaded %d pharmacies with lat/lng\n", len(pharmacies))
-
-	pcode1 := "BD18 2DS"
-	pcode2 := "M4 4BF"
-	from := latLngs[pcode1]
-	to := latLngs[pcode2]
-	dist1 := finder.Distance(from, to)
-	fmt.Printf("Distance from '%s' to '%s': %fm\n", pcode1, pcode2, dist1)
-
-	find := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
-	fmt.Println()
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("Enter postcode in format M4 4BF: ")
-		pcode, _ := reader.ReadString('\n')
-		pcode = strings.Replace(pcode, "\n", "", -1)
-		pcode = strings.ToUpper(pcode)
-		if len(pcode) < 2 {
-			fmt.Println("Goodbye!")
-			return
-		}
-
-		results := find.ByPostcode(pcode)
-		display(results)
+	postcodeFile, err := os.Open(path.Join(dataDir, "postcode.csv"))
+	if err != nil {
+		exitError("could not open postcode file: %v\n", err)
 	}
+	defer postcodeFile.Close()
+
+	latLngs, err := finder.LoadLatLngs(postcodeFile)
+	if err != nil {
+		exitError("could not load postcode data: %v\n", err)
+	}
+	fmt.Printf("Loaded %d postcodes with latlng\n", len(latLngs))
+
+	pharmacyFile, err := os.Open(path.Join(dataDir, "pharmacy.csv"))
+	if err != nil {
+		exitError("could not open pharmacy file: %v", err)
+	}
+	defer pharmacyFile.Close()
+
+	pharmacies, err := finder.LoadPharmacies(pharmacyFile)
+	if err != nil {
+		exitError("could not load pharmacy data: %v\n", err)
+	}
+	fmt.Printf("Loaded %d pharmacies with latlng\n", len(pharmacies))
+
+	// create in mem finder
+	finder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
+	results := finder.ByPostcode(postcode)
+	display(results)
 }
 
 func searchGP(postcode string) {
@@ -94,4 +88,9 @@ func display(results []finder.FindResult) {
 	for i, r := range results {
 		fmt.Printf("%2d %7.2f %-30s %-30s %s\n", i, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
 	}
+}
+
+func exitError(msg string, err error) {
+	fmt.Fprintln(os.Stderr, msg, err)
+	os.Exit(1)
 }

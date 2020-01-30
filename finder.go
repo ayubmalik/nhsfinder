@@ -1,7 +1,9 @@
 package pharmacyfinder
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"sort"
 	"time"
 )
@@ -24,12 +26,11 @@ type Address struct {
 
 // Pharmacy in England
 type Pharmacy struct {
-	ODSCode       string
-	ParentODSCode string
-	Name          string
-	Address       *Address
-	Phone         string
-	LatLng        LatLng
+	ODSCode string
+	Name    string
+	Address Address
+	Phone   string
+	LatLng  LatLng
 }
 
 // FindResult is a given item and distance from search query
@@ -49,10 +50,31 @@ type InMemFinder struct {
 }
 
 // NewInMemFinder returns an in memory finder with files loaded from default paths
-func NewInMemFinder() InMemFinder {
-	latLngs := LoadLatLngs("data/ukpostcodes.csv")
-	pharmacies := LoadPharmacies("data/pharmacies.csv")
-	return InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
+// TODO: add dataDir param from viper
+func NewInMemFinder() (*InMemFinder, error) {
+	postcodeFile, err := os.Open("data/postcode.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer postcodeFile.Close()
+
+	latLngs, err := LoadLatLngs(postcodeFile)
+	if err != nil {
+		return nil, err
+	}
+
+	pharmacyFile, err := os.Open("data/pharmacy.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer pharmacyFile.Close()
+
+	pharmacies, err := LoadPharmacies(pharmacyFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "could not load pharmacy file: %v", err)
+		os.Exit(1)
+	}
+	return &InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}, nil
 }
 
 // ByPostcode finds nearest 10 <- should make param

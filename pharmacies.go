@@ -13,7 +13,7 @@ import (
 
 // SimplifyODS takes NHS ODS data from a file and creates a simplified CSV.
 // The resulting CSV file contains no header and only the following fields:
-//	 ODSCode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Email, Lat, Lng
+//	 ODSCode, Name, Address1, Address2, Address3, Address4, Postcode, Telephone, Lat, Lng
 //
 // For source data see:
 // 	http://media.nhschoices.nhs.uk/data/foi/Pharmacy.csv
@@ -39,8 +39,8 @@ func SimplifyODS(inputCSV string, outputCSV string) error {
 		pcode := row[13]
 		lat := row[14]
 		lng := row[15]
-		p := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-			row[1], clean(row[7]), clean(row[8]), clean(row[9]), clean(row[10]), clean(row[11]), pcode, row[18], row[19], lat, lng)
+		p := fmt.Sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+			row[1], clean(row[7]), clean(row[8]), clean(row[9]), clean(row[10]), clean(row[11]), pcode, row[18], lat, lng)
 		orgs = append(orgs, p)
 	}
 	return write(outputCSV, orgs)
