@@ -23,8 +23,12 @@ type Address struct {
 	Postcode string
 }
 
-// Pharmacy in England
-type Pharmacy struct {
+// *********************************************************************** //
+// TODO use type alias as GP and Pharmacy are currently identical structs? //
+// *********************************************************************** //
+
+// Org is an NHS organisation in England.
+type Org struct {
 	ODSCode string
 	Name    string
 	Address Address
@@ -32,10 +36,17 @@ type Pharmacy struct {
 	LatLng  LatLng
 }
 
+// Pharmacy is pharmacy in England.
+type Pharmacy Org
+
+// GP is General Practioner in England.
+type GP Org
+
 // FindResult is a given item and distance from search query
 type FindResult struct {
 	Distance float64
 	Pharmacy Pharmacy
+	GP       GP
 }
 
 type finder interface {
@@ -46,6 +57,7 @@ type finder interface {
 type InMemFinder struct {
 	LatLngs    map[string]LatLng
 	Pharmacies []Pharmacy
+	GPs        []GP
 }
 
 // NewInMemFinder returns an in memory finder with files loaded from default paths
@@ -77,12 +89,12 @@ func NewInMemFinder() (*InMemFinder, error) {
 }
 
 // FindPharmacy finds nearest 10 TODO: should make param
-func (pf InMemFinder) FindPharmacy(postcode string) []FindResult {
+func (f InMemFinder) FindPharmacy(postcode string) []FindResult {
 	postcode = strings.ReplaceAll(postcode, " ", "")
 	distances := make(map[float64]Pharmacy)
-	for _, pharmacy := range pf.Pharmacies {
-		fromLatLng := pf.LatLngs[postcode]
-		dist := Distance(fromLatLng, pharmacy.LatLng)
+	for _, pharmacy := range f.Pharmacies {
+		from := f.LatLngs[postcode]
+		dist := Distance(from, pharmacy.LatLng)
 		distances[dist] = pharmacy
 	}
 
@@ -100,7 +112,37 @@ func (pf InMemFinder) FindPharmacy(postcode string) []FindResult {
 	result := make([]FindResult, 0, max)
 	for i := 0; i < max; i++ {
 		p := distances[keys[i]]
-		result = append(result, FindResult{keys[i], p})
+		result = append(result, FindResult{Distance: keys[i], Pharmacy: p})
+	}
+	return result
+}
+
+// FindGPs finds GPs in England.
+// 10 TODO: should make param
+func (f InMemFinder) FindGPs(postcode string) []FindResult {
+	postcode = strings.ReplaceAll(postcode, " ", "")
+	distances := make(map[float64]GP)
+	for _, gp := range f.GPs {
+		from := f.LatLngs[postcode]
+		dist := Distance(from, gp.LatLng)
+		distances[dist] = gp
+	}
+
+	keys := make([]float64, 0, len(distances))
+	for k := range distances {
+		keys = append(keys, k)
+	}
+	sort.Float64s(keys)
+
+	max := 10
+	if len(keys) < max {
+		max = len(keys)
+	}
+
+	result := make([]FindResult, 0, max)
+	for i := 0; i < max; i++ {
+		gp := distances[keys[i]]
+		result = append(result, FindResult{Distance: keys[i], GP: gp})
 	}
 	return result
 }

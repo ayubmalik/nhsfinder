@@ -44,13 +44,23 @@ var searchPharmacyCmd = &cobra.Command{
 	},
 }
 
-func init() {
+var searchGPCmd = &cobra.Command{
+	Use:   "gp [postcode]",
+	Short: "search for GP by postcode",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		data := viper.GetString("data")
+		searchGP(data, args[0])
+	},
+}
 
+func init() {
 	searchCmd.AddCommand(searchPharmacyCmd)
+	searchCmd.AddCommand(searchGPCmd)
 	rootCmd.AddCommand(searchCmd)
 }
 
-func searchPharmacy(dataDir string, postcode string) {
+func searchPharmacy(dataDir, postcode string) {
 	postcodeFile, err := os.Open(path.Join(dataDir, "postcode.csv"))
 	if err != nil {
 		exitError("could not open postcode file: %v\n", err)
@@ -78,17 +88,45 @@ func searchPharmacy(dataDir string, postcode string) {
 	start := time.Now()
 	results := finder.FindPharmacy(postcode)
 	end := time.Now().Sub(start)
-	fmt.Printf("Calculated pharmacy distances from %s in %s\n", postcode, end)
-	display(results)
-}
 
-func searchGP(postcode string) {
-
-}
-
-func display(results []finder.FindResult) {
+	fmt.Printf("Calculated GP distances from %s in %s\n", postcode, end)
 	for i, r := range results {
 		fmt.Printf("%2d %7.2f %-40s %-30s %8s\n", i+1, r.Distance, r.Pharmacy.Name, r.Pharmacy.Address.Line1, r.Pharmacy.Address.Postcode)
+	}
+}
+
+func searchGP(dataDir, postcode string) {
+	postcodeFile, err := os.Open(path.Join(dataDir, "postcode.csv"))
+	if err != nil {
+		exitError("could not open postcode file: %v\n", err)
+	}
+	defer postcodeFile.Close()
+
+	latLngs, err := finder.LoadLatLngs(postcodeFile)
+	if err != nil {
+		exitError("could not load postcode data: %v\n", err)
+	}
+
+	gpFile, err := os.Open(path.Join(dataDir, "gp.csv"))
+	if err != nil {
+		exitError("could not open GP file: %v", err)
+	}
+	defer gpFile.Close()
+
+	gps, err := finder.LoadGPs(gpFile)
+	if err != nil {
+		exitError("could not load GP data: %v\n", err)
+	}
+
+	// create in mem finder
+	finder := finder.InMemFinder{LatLngs: latLngs, GPs: gps}
+	start := time.Now()
+	results := finder.FindGPs(postcode)
+	end := time.Now().Sub(start)
+
+	fmt.Printf("Calculated GP distances from %s in %s\n", postcode, end)
+	for i, r := range results {
+		fmt.Printf("%2d %7.2f %-40s %-30s %8s\n", i+1, r.Distance, r.GP.Name, r.GP.Address.Line1, r.GP.Address.Postcode)
 	}
 }
 

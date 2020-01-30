@@ -50,7 +50,7 @@ var downloadPharmacyCmd = &cobra.Command{
 	Short: "download pharmacy data",
 	Run: func(cmd *cobra.Command, args []string) {
 		dataDir := viper.GetString("data")
-		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "pharmacy.csv"))
+		downloadODS(&finder.HTTPDownloader{}, pharmacyCSV, path.Join(dataDir, "pharmacy.csv"))
 	},
 }
 
@@ -59,7 +59,7 @@ var downloadGPCmd = &cobra.Command{
 	Short: "download GP data",
 	Run: func(cmd *cobra.Command, args []string) {
 		dataDir := viper.GetString("data")
-		downloadODS(&finder.HTTPDownloader{}, path.Join(dataDir, "gp.csv"))
+		downloadODS(&finder.HTTPDownloader{}, gpCSV, path.Join(dataDir, "gp.csv"))
 	},
 }
 
@@ -79,17 +79,17 @@ func init() {
 	rootCmd.AddCommand(downloadCmd)
 }
 
-func downloadODS(d finder.Downloader, outputFile string) {
+func downloadODS(d finder.Downloader, srcURL, outputFile string) {
 	tmpDir, err := ioutil.TempDir("", "finder-")
 	if err != nil {
 		panic(err)
 	}
 	defer func() { os.RemoveAll(tmpDir) }()
 
-	base := path.Base(gpCSV)
+	base := path.Base(srcURL)
 	tmpFile := path.Join(tmpDir, base)
 
-	d.Download(gpCSV, tmpFile)
+	d.Download(srcURL, tmpFile)
 	finder.SimplifyODS(tmpFile, outputFile)
 }
 
