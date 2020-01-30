@@ -1,19 +1,11 @@
-FROM golang:1.11
+FROM golang:1.13 as builder
 
-WORKDIR /go/src/github.com/ayubmalik/pharmacyfinder/
+WORKDIR /go/src/github.com/ayubmalik/trams
 
-COPY . ./
+COPY . /go/src/github.com/ayubmalik/trams
 
-WORKDIR /go/src/github.com/ayubmalik/pharmacyfinder/cmd/server
+RUN GO111MODULE=off CGO_ENABLED=0 GOOS=linux go build -o dist/linux/trams ./cmd/trams
 
-RUN go get goji.io goji.io/pat && go build .
+RUN GO111MODULE=off CGO_ENABLED=0 GOOS=darwin go build -o dist/darwin/trams ./cmd/trams
 
-RUN ls -lrt
-
-# $ docker run --rm -it -v "$PWD":/usr/src/myapp -w /usr/src/myapp golang:1.8 bash
-#$ for GOOS in darwin linux; do
-#>   for GOARCH in 386 amd64; do
-#>     export GOOS GOARCH
-#>     go build -v -o myapp-$GOOS-$GOARCH
-#>   done
-#> done
+VOLUME /go/src/github.com/ayubmalik/trams
