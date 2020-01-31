@@ -20,7 +20,7 @@ type FinderHandler struct {
 	http.Handler
 }
 
-func (h *FinderHandler) findByPostcode(w http.ResponseWriter, r *http.Request) {
+func (h *FinderHandler) findPharmacies(w http.ResponseWriter, r *http.Request) {
 	postcode := pat.Param(r, "postcode")
 	if len(postcode) < minlen || len(postcode) > maxlen {
 		w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +35,7 @@ func NewFinderHandler(pf pharmacyFinder) *FinderHandler {
 	h := new(FinderHandler)
 	h.pharmacyFinder = pf
 	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/pharmacies/postcode/:postcode"), h.findByPostcode)
+	mux.HandleFunc(pat.Get("/pharmacies/postcode/:postcode"), h.findPharmacies)
 	h.Handler = mux
 	return h
 }

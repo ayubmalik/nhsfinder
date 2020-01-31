@@ -67,7 +67,7 @@ type InMemFinder struct {
 
 // FindPharmacy finds nearest 10 TODO: should make param
 func (f InMemFinder) FindPharmacy(postcode string) []FindResult {
-	postcode = strings.ReplaceAll(postcode, " ", "")
+	postcode = strings.ToUpper(strings.ReplaceAll(postcode, " ", ""))
 	distances := make(map[float64]Pharmacy)
 	for _, pharmacy := range f.Pharmacies {
 		from := f.LatLngs[postcode]
@@ -97,7 +97,7 @@ func (f InMemFinder) FindPharmacy(postcode string) []FindResult {
 // FindGPs finds GPs in England.
 // 10 TODO: should make param
 func (f InMemFinder) FindGPs(postcode string) []FindResult {
-	postcode = strings.ReplaceAll(postcode, " ", "")
+	postcode = strings.ToUpper(strings.ReplaceAll(postcode, " ", ""))
 	distances := make(map[float64]GP)
 	for _, gp := range f.GPs {
 		from := f.LatLngs[postcode]
