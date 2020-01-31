@@ -7,12 +7,17 @@ import (
 	"testing"
 )
 
-//FindPharmacy(postcode string) []FindResult
-//	FindGPs(postcode string) []FindResult
-type StubFinderFunc func(string) []FindResult
+//type StubFinderFunc func(string) []FindResult
 
-func (sff StubFinderFunc) FindPharmacy(postcode string) []FindResult {
-	return sff(postcode)
+type StubFinder struct {
+}
+
+func (f StubFinder) FindPharmacies(postcode string) []FindResult {
+	return []FindResult{}
+}
+
+func (f StubFinder) FindGPs(postcode string) []FindResult {
+	return []FindResult{}
 }
 
 func TestPharmacyHandler(t *testing.T) {

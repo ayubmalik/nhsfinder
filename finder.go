@@ -50,11 +50,8 @@ type FindResult struct {
 }
 
 // finds pharmacies
-type pharmacyFinder interface {
-	FindPharmacy(postcode string) []FindResult
-}
-
-type gpFinder interface {
+type finder interface {
+	FindPharmacies(postcode string) []FindResult
 	FindGPs(postcode string) []FindResult
 }
 
