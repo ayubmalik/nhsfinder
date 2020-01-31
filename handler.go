@@ -15,8 +15,7 @@ const (
 
 // FinderHandler handles pharmacy http API
 type FinderHandler struct {
-	pharmacyFinder pharmacyFinder
-	gpFinder       gpFinder
+	finder finder
 	http.Handler
 }
 
@@ -26,14 +25,14 @@ func (h *FinderHandler) findPharmacies(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	results := h.pharmacyFinder.FindPharmacy(postcode)
+	results := h.finder.FindPharmacies(postcode)
 	json.NewEncoder(w).Encode(results)
 }
 
 // NewFinderHandler creates a http.Handler for finding NHS organisations
-func NewFinderHandler(pf pharmacyFinder) *FinderHandler {
+func NewFinderHandler(f finder) *FinderHandler {
 	h := new(FinderHandler)
-	h.pharmacyFinder = pf
+	h.finder = f
 	mux := goji.NewMux()
 	mux.HandleFunc(pat.Get("/pharmacies/postcode/:postcode"), h.findPharmacies)
 	h.Handler = mux

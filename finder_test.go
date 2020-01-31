@@ -27,7 +27,7 @@ func TestByPostcode(t *testing.T) {
 		}
 
 		finder := InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
-		got := finder.FindPharmacy("M44BF")
+		got := finder.FindPharmacies("M44BF")
 
 		if len(got) != 10 {
 			t.Fatalf("got %d pharmacies, wanted %d", len(got), 10)
@@ -45,7 +45,7 @@ func TestByPostcode(t *testing.T) {
 		}
 
 		finder := InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
-		got := finder.FindPharmacy("M44BF")
+		got := finder.FindPharmacies("M44BF")
 
 		if len(got) != 2 {
 			t.Fatalf("got %d pharmacies, wanted %d", len(got), 2)

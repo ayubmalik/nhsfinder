@@ -49,7 +49,7 @@ type FindResult struct {
 	GP       GP
 }
 
-// finds pharmacies
+// finds various NHS organisations
 type finder interface {
 	FindPharmacies(postcode string) []FindResult
 	FindGPs(postcode string) []FindResult
@@ -62,8 +62,8 @@ type InMemFinder struct {
 	GPs        []GP
 }
 
-// FindPharmacy finds nearest 10 TODO: should make param
-func (f InMemFinder) FindPharmacy(postcode string) []FindResult {
+// FindPharmacies finds nearest 10 TODO: should make param
+func (f InMemFinder) FindPharmacies(postcode string) []FindResult {
 	postcode = strings.ToUpper(strings.ReplaceAll(postcode, " ", ""))
 	distances := make(map[float64]Pharmacy)
 	for _, pharmacy := range f.Pharmacies {

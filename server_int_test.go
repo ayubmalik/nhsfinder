@@ -12,7 +12,7 @@ import (
 func TestPharmaciesServer(t *testing.T) {
 	finder, _ := nhsfinder.NewInMemFinder()
 
-	handler := nhsfinder.NewPharmacyHandler(finder)
+	handler := nhsfinder.NewFinderHandler(finder)
 
 	server := httptest.NewServer(handler)
 	defer server.Close()
