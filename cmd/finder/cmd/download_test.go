@@ -36,7 +36,7 @@ func TestDownloadPharmacy(t *testing.T) {
 
 	want := path.Join(destDir, "pharmacies.csv")
 	downloader := mockDownloader{fromFile: "../../../testdata/Pharmacy.csv"}
-	downloadODS(downloader, want)
+	downloadODS(downloader, "srcUrl", want)
 
 	info, err := os.Stat(want)
 	if err != nil || info.Name() != path.Base(want) {
@@ -50,7 +50,7 @@ func TestDownloadGP(t *testing.T) {
 
 	want := path.Join(destDir, "gps.csv")
 	downloader := mockDownloader{fromFile: "../../../testdata/GP.csv"}
-	downloadODS(downloader, want)
+	downloadODS(downloader, "srcUrl", want)
 
 	info, err := os.Stat(want)
 	if err != nil || info.Name() != path.Base(want) {

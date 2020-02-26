@@ -86,7 +86,7 @@ func searchPharmacy(dataDir, postcode string) {
 	// create in mem finder
 	finder := finder.InMemFinder{LatLngs: latLngs, Pharmacies: pharmacies}
 	start := time.Now()
-	results := finder.FindPharmacy(postcode)
+	results := finder.FindPharmacies(postcode)
 	end := time.Now().Sub(start)
 
 	fmt.Printf("Calculated GP distances from %s in %s\n", postcode, end)
